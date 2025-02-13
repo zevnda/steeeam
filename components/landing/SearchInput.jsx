@@ -44,7 +44,7 @@ export default function SearchInput() {
             <Input
                 size='lg'
                 startContent={<RiSearchLine className='text-neutral-500' fontSize={20} />}
-                placeholder='ProbablyRaging or 76561198158912649'
+                placeholder='zevnda or 76561198158912649'
                 value={inputValue}
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}

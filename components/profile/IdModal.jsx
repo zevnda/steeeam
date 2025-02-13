@@ -28,7 +28,7 @@ export default function IdModal({ isOpen, onOpenChange, userSummary }) {
                                             <p>Vanity URL</p>
                                         </td>
                                         <td className='border-l border-b border-light-border p-2 max-w-[100px]'>
-                                            <Link href={`https://steamcommunity.com/id/probablyraging/${userSummary.customURL}`} target='_blank'>
+                                            <Link href={`https://steamcommunity.com/id/${userSummary.customURL}`} target='_blank'>
                                                 <p className='truncate'>{userSummary.customURL}</p>
                                             </Link>
                                         </td>
@@ -65,7 +65,7 @@ export default function IdModal({ isOpen, onOpenChange, userSummary }) {
                                             <p>Steam ID</p>
                                         </td>
                                         <td className='border-l border-b border-light-border p-2 max-w-[100px]'>
-                                            <Link href={`https://steamcommunity.com/id/probablyraging/${userSummary.steamId}`} target='_blank'>
+                                            <Link href={`https://steamcommunity.com/id/${userSummary.steamId}`} target='_blank'>
                                                 <p className='truncate'>{userSummary.steamId}</p>
                                             </Link>
                                         </td>
@@ -89,7 +89,7 @@ export default function IdModal({ isOpen, onOpenChange, userSummary }) {
                                             <p>Steam3 ID</p>
                                         </td>
                                         <td className='border-l border-light-border p-2'>
-                                            <Link href={`https://steamcommunity.com/id/probablyraging/${userSummary.steam3}`} target='_blank'>
+                                            <Link href={`https://steamcommunity.com/id/${userSummary.steam3}`} target='_blank'>
                                                 <p>{userSummary.steam3}</p>
                                             </Link>
                                         </td>

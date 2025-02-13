@@ -4,22 +4,22 @@
  <p align="center">Calculate your game library value, total playtime, average game cost, and more. Dynamically generate a shareable card to brag (or cry) about your collection on Discord, GitHub, and other platforms.</p>
 </p>
   <p align="center">
-    <a href="https://github.com/probablyraging/steeeam/graphs/contributors">
-      <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/probablyraging/steeeam" />
+    <a href="https://github.com/zevnda/steeeam/graphs/contributors">
+      <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/zevnda/steeeam" />
     </a>
-    <a href="https://github.com/probablyraging/steeeam/issues">
-      <img alt="Issues" src="https://img.shields.io/github/issues/probablyraging/steeeam?color=0088ff" />
+    <a href="https://github.com/zevnda/steeeam/issues">
+      <img alt="Issues" src="https://img.shields.io/github/issues/zevnda/steeeam?color=0088ff" />
     </a>
-    <a href="https://github.com/probablyraging/steeeam/pulls">
-      <img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr/probablyraging/steeeam?color=0088ff" />
+    <a href="https://github.com/zevnda/steeeam/pulls">
+      <img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr/zevnda/steeeam?color=0088ff" />
     </a>
-    <a href="https://securityscorecards.dev/viewer/?uri=github.com/probablyraging/steeeam">
-      <img alt="OpenSSF Scorecard" src="https://api.securityscorecards.dev/projects/github.com/probablyraging/steeeam/badge" />
+    <a href="https://securityscorecards.dev/viewer/?uri=github.com/zevnda/steeeam">
+      <img alt="OpenSSF Scorecard" src="https://api.securityscorecards.dev/projects/github.com/zevnda/steeeam/badge" />
     </a>
     <br />
     <br />
     <a href="https://vercel.com">
-      <img src="https://raw.githubusercontent.com/probablyraging/steeeam/master/powered-by-vercel.svg"/>
+      <img src="https://raw.githubusercontent.com/zevnda/steeeam/master/powered-by-vercel.svg"/>
     </a>
   </p>
 
@@ -43,17 +43,17 @@ Personalize every aspect of your card by appending any of the options below, or 
 
 ### Examples
 ```
-https://steeeam.vercel.app/api/probablyraging
+https://steeeam.vercel.app/api/zevnda
 ```
 <img src="./public/canvas/example1.png" width='300'/>
 
 ```
-https://steeeam.vercel.app/api/probablyraging?theme=light
+https://steeeam.vercel.app/api/zevnda?theme=light
 ```
 <img src="./public/canvas/example2.png" width='300'/>
 
 ```
-https://steeeam.vercel.app/api/probablyraging?bg_color=501b85&title_color=fff&text_color=db86d6&sub_title_color=e8b864&border_color=b32447&border_width=5&progbar_bg=b32447&progbar_color=5ebfc4
+https://steeeam.vercel.app/api/zevnda?bg_color=501b85&title_color=fff&text_color=db86d6&sub_title_color=e8b864&border_color=b32447&border_width=5&progbar_bg=b32447&progbar_color=5ebfc4
 ```
 <img src="./public/canvas/example3.png" width='300'/>
 

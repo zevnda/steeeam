@@ -59,7 +59,7 @@ export default function ShareableImage() {
                                 <p>The URL allows you to share your Steam card directly in places like Discord channels, Facebook posts, GitHub markdown files, and more, by simply copying and pasting it where you want to share the image</p>
                             </AccordionItem>
                             <AccordionItem key='2' aria-label='Can I customize it?' title='Can I customize it?'>
-                                <p>Yep. Your Steam card is fully customizable, from the background color, to the text color. <Link href={'https://github.com/ProbablyRaging/steeeam?tab=readme-ov-file#shareable-image'} target='_blank'>Learn more here</Link>.</p>
+                                <p>Yep. Your Steam card is fully customizable, from the background color, to the text color. <Link href={'https://github.com/zevnda/steeeam?tab=readme-ov-file#shareable-image'} target='_blank'>Learn more here</Link>.</p>
                             </AccordionItem>
                         </Accordion>
                     </div>

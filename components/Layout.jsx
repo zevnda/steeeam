@@ -10,7 +10,7 @@ export default function Layout({ children }) {
                 <meta name="description" content="Generate a shareable image to brag (or cry) about your Steam collection on Discord and other platforms." />
                 <meta name="keywords" content="Steam library calculator, Steam playtime tracker, Steam game cost analyzer, free Steam library calculator, compare Steam playtime with friends, Steam profile stats, Steam library stats generator, shareable Steam library image, Discord Steam library image" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <meta name="author" content="probablyraging" />
+                <meta name="author" content="zevnda" />
 
                 <meta property='og:title' content='Steeeam - Visualize your Steam profile' />
                 <meta property="og:description" content="Generate a shareable image to brag (or cry) about your Steam collection on Discord and other platforms." />

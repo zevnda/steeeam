@@ -28,7 +28,7 @@ export default function Landing() {
                         </Link>
 
                         <div className='flex items-center gap-4'>
-                            <Link href={'https://github.com/probablyraging'} target='_blank'>
+                            <Link href={'https://github.com/zevnda'} target='_blank'>
                                 <FaGithub fontSize={26} className='text-black dark:text-white hover:text-link dark:hover:text-link' />
                             </Link>
                             <Link href={'https://discord.com/users/438434841617367080'} target='_blank'>
