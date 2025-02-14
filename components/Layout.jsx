@@ -2,8 +2,6 @@ import { Fragment, useEffect } from 'react';
 import Head from 'next/head';
 import { useTheme } from 'next-themes';
 import { GeistSans } from 'geist/font/sans';
-import { Slide, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 export default function Layout({ children }) {
     const { theme } = useTheme();
@@ -58,18 +56,6 @@ export default function Layout({ children }) {
             <main className={`${GeistSans.className}`}>
                 {children}
             </main>
-
-            <ToastContainer
-                toastStyle={getToastStyles()}
-                position='top-center'
-                theme={theme}
-                transition={Slide}
-                pauseOnHover
-                pauseOnFocusLoss={false}
-                limit={2}
-                newestOnTop
-                autoClose={3000}
-            />
         </Fragment>
     );
 }

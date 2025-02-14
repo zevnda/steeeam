@@ -6,7 +6,6 @@ import { RiSearchLine } from 'react-icons/ri';
 import { formatSteamProfileUrl } from '@/utils/utils';
 import CurrencySelect from './CurrencySelect';
 import { UserDataContext } from '../UserDataContext';
-import { toast } from 'react-toastify';
 
 export default function SearchInput() {
     const router = useRouter();
@@ -17,7 +16,6 @@ export default function SearchInput() {
 
     const handleSubmit = async () => {
         setIsLoading(true);
-        toast.loading('Fetching data...');
         if (inputValue.length > 0) {
             const formatInput = formatSteamProfileUrl(inputValue);
             if (countryCode) {
