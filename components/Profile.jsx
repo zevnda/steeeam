@@ -1,5 +1,4 @@
-import React, { useContext } from 'react';
-import Head from 'next/head';
+import { Fragment, useContext } from 'react';
 import { useRouter } from 'next/router';
 import Loader from './Loader';
 import ProfileSummary from './profile/ProfileSummary';
@@ -17,11 +16,7 @@ export default function Profile() {
     if (!userSummary) return <Loader />;
 
     return (
-        <React.Fragment>
-            <Head>
-                <title>{`${userSummary.personaName} - Steeeam`}</title>
-            </Head>
-
+        <Fragment>
             <div className='bg-base'>
                 <div className='max-w-[1300px] mx-auto'>
                     <div className='flex items-center flex-col lg:items-start lg:gap-10 p-4 lg:p-6'>
@@ -36,6 +31,6 @@ export default function Profile() {
             </div>
 
             <Footer />
-        </React.Fragment>
+        </Fragment>
     );
 }

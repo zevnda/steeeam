@@ -1,4 +1,4 @@
-import React from 'react';
+import { Fragment } from 'react';
 import Navigation from './Navigation';
 import Avatar from './Avatar';
 import UserDetails from './UserDetails';
@@ -8,7 +8,7 @@ import UserBans from './UserBans';
 
 export default function Sidebar({ steamId, userSummary }) {
     return (
-        <React.Fragment>
+        <Fragment>
             <div className='flex flex-col gap-4 w-full items-center z-50 lg:absolute lg:item-start lg:max-w-[240px] lg:w-fit'>
                 <Navigation />
                 <Avatar userSummary={userSummary} />
@@ -20,6 +20,6 @@ export default function Sidebar({ steamId, userSummary }) {
                     <UserBans steamId={steamId} />
                 </div>
             </div>
-        </React.Fragment>
+        </Fragment>
     );
 }

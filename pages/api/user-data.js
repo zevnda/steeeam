@@ -39,7 +39,9 @@ export default async function handler(req, res) {
         getUserBans(steamId)
     ]);
 
-    const responseData = { userSummary, gamesList, gameData, userConnections, userExp, userBans };
+    const gameDetails = await getGameDetails(gamesList, req.query.cc);
+
+    const responseData = { userSummary, gamesList, gameData, userConnections, userExp, userBans, gameDetails };
 
     return res.status(200).json(responseData);
 }
@@ -215,6 +217,17 @@ async function getUserBans(steamId) {
         return userBans;
     } catch (error) {
         console.error('Error getting user bans');
+        return null;
+    }
+}
+
+async function getGameDetails(games, countryCode) {
+    try {
+        const gameIds = games.map(game => game.game.id);
+        const gameDetails = await sapi.getGameDetails(gameIds, { currency: countryCode });
+        return gameDetails;
+    } catch (error) {
+        console.error('Error getting game details');
         return null;
     }
 }

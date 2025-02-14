@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { Fragment, useContext } from 'react';
 import Link from 'next/link';
 import { Divider, Skeleton } from '@heroui/react';
 import { HiMiniUserGroup } from 'react-icons/hi2';
@@ -11,7 +11,7 @@ export default function UserConnection({ userSummary }) {
     if (!userConnections) return <Skeleton className='w-full h-[18px] rounded-full mt-2' />;
 
     return (
-        <React.Fragment>
+        <Fragment>
             <div className='flex justify-center items-center max-w-[240px] gap-2 w-full mt-2 lg:justify-start'>
                 <div className='flex items-center max-w-[100px] text-sm text-neutral-500 gap-2'>
                     <HiMiniUserGroup fontSize={16} />
@@ -33,6 +33,6 @@ export default function UserConnection({ userSummary }) {
                     </Link>
                 </div>
             </div>
-        </React.Fragment>
+        </Fragment>
     );
 }

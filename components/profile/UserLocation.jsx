@@ -1,4 +1,4 @@
-import React from 'react';
+import { Fragment, } from 'react';
 import moment from 'moment';
 import { Tooltip } from '@heroui/react';
 import { FaMapMarkerAlt } from 'react-icons/fa';
@@ -8,7 +8,7 @@ import { getRelativeTimeImprecise } from '@/utils/utils';
 
 export default function UserLocation({ userSummary }) {
     return (
-        <React.Fragment>
+        <Fragment>
             <div className='flex items-center flex-col w-full gap-2 mt-4 lg:items-start'>
                 <Tooltip closeDelay={0} className='bg-tooltip' content={userSummary.location ? userSummary.location : 'Unknown location'}>
                     <div className='flex items-center max-w-[300px] text-sm text-neutral-500 gap-2 lg:max-w-[200px]'>
@@ -39,6 +39,6 @@ export default function UserLocation({ userSummary }) {
                     </p>
                 </div>
             </div>
-        </React.Fragment>
+        </Fragment>
     );
 }

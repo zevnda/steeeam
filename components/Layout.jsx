@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { Fragment, useEffect } from 'react';
 import Head from 'next/head';
 import { useTheme } from 'next-themes';
 import { GeistSans } from 'geist/font/sans';
@@ -31,7 +31,7 @@ export default function Layout({ children }) {
     }, [theme]);
 
     return (
-        <React.Fragment>
+        <Fragment>
             <Head>
                 <title>Steeeam - Visualize your Steam profile</title>
                 <meta name="description" content="Generate a shareable image to brag (or cry) about your Steam collection on Discord and other platforms." />
@@ -70,6 +70,6 @@ export default function Layout({ children }) {
                 newestOnTop
                 autoClose={3000}
             />
-        </React.Fragment>
+        </Fragment>
     );
 }

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import { Fragment, useContext, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Input, Button } from '@heroui/react';
 import { FaArrowRight } from 'react-icons/fa';
@@ -45,41 +45,43 @@ export default function SearchInput() {
     };
 
     return (
-        <div className='flex items-center flex-col gap-4 w-full px-6 md:w-[1000px]'>
-            <Input
-                size='lg'
-                startContent={<RiSearchLine className='text-neutral-500' fontSize={20} />}
-                placeholder='zevnda or 76561198158912649'
-                value={inputValue}
-                onChange={handleChange}
-                onKeyDown={handleKeyDown}
-                isDisabled={isLoading}
-                endContent={
-                    <Button
-                        size='sm'
-                        isIconOnly
-                        isDisabled={!inputValue > 0}
-                        startContent={<FaArrowRight />}
-                        onPress={handleSubmit}
-                        className='bg-pop text-white dark:text-black ml-[20px]'
-                    />
-                }
-                classNames={{
-                    inputWrapper: [
-                        'bg-base',
-                        'hover:!bg-base-hover',
-                        'group-data-[focus=true]:!bg-base-hover',
-                        'group-data-[focus=true]:!shadow-custom',
-                        'border',
-                        'border-light-border',
-                        'group-data-[focus=true]:!border-hover-border',
-                        'hover:!border-hover-border',
-                        'rounded-lg',
-                    ],
-                }}
-            />
+        <Fragment>
+            <div className='flex items-center flex-col gap-4 w-full px-6 md:w-[1000px]'>
+                <Input
+                    size='lg'
+                    startContent={<RiSearchLine className='text-neutral-500' fontSize={20} />}
+                    placeholder='zevnda or 76561198158912649'
+                    value={inputValue}
+                    onChange={handleChange}
+                    onKeyDown={handleKeyDown}
+                    isDisabled={isLoading}
+                    endContent={
+                        <Button
+                            size='sm'
+                            isIconOnly
+                            isDisabled={!inputValue > 0}
+                            startContent={<FaArrowRight />}
+                            onPress={handleSubmit}
+                            className='bg-pop text-white dark:text-black ml-[20px]'
+                        />
+                    }
+                    classNames={{
+                        inputWrapper: [
+                            'bg-base',
+                            'hover:!bg-base-hover',
+                            'group-data-[focus=true]:!bg-base-hover',
+                            'group-data-[focus=true]:!shadow-custom',
+                            'border',
+                            'border-light-border',
+                            'group-data-[focus=true]:!border-hover-border',
+                            'hover:!border-hover-border',
+                            'rounded-lg',
+                        ],
+                    }}
+                />
 
-            <CurrencySelect setCountryCode={setCountryCode} setCountryAbbr={setCountryAbbr} />
-        </div>
+                <CurrencySelect setCountryCode={setCountryCode} setCountryAbbr={setCountryAbbr} />
+            </div>
+        </Fragment>
     );
 }

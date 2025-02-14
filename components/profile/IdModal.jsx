@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { Fragment, useState } from 'react';
 import Link from 'next/link';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/react';
 import { FaRegCopy } from 'react-icons/fa';
@@ -15,10 +15,10 @@ export default function IdModal({ isOpen, onOpenChange, userSummary }) {
     };
 
     return (
-        <React.Fragment>
+        <Fragment>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange} className='absolute top-[200px] bg-base border border-light-border max-w-[90%] lg:min-w-[600px] lg:lg:max-w-[800px]'>
                 <ModalContent>
-                    <React.Fragment>
+                    <Fragment>
                         <ModalHeader></ModalHeader>
                         <ModalBody>
                             <table className='border border-light-border border-separate border-spacing-0 w-full rounded-md text-sm'>
@@ -101,7 +101,7 @@ export default function IdModal({ isOpen, onOpenChange, userSummary }) {
                             </table>
                         </ModalBody>
                         <ModalFooter></ModalFooter>
-                    </React.Fragment>
+                    </Fragment>
                 </ModalContent>
                 <div className={`${isCopied ? 'flex' : 'hidden'} flex fixed bottom-0 right-0 m-5 z-50`}>
                     <div className='bg-base border border-light-border rounded-md p-4'>
@@ -109,6 +109,6 @@ export default function IdModal({ isOpen, onOpenChange, userSummary }) {
                     </div>
                 </div>
             </Modal>
-        </React.Fragment>
+        </Fragment>
     );
 }

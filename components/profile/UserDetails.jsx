@@ -1,5 +1,5 @@
+import { Fragment } from 'react';
 import Link from 'next/link';
-import React from 'react';
 import { Button } from '@heroui/react';
 import { useDisclosure } from '@heroui/react';
 import IdModal from './IdModal';
@@ -8,7 +8,7 @@ export default function UserDetails({ userSummary }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     return (
-        <React.Fragment>
+        <Fragment>
             <div className='flex flex-col w-full gap-6 items-center lg:items-start'>
                 <div className='flex flex-col w-full items-center lg:items-start lg:w-fit lg:max-w-[240px]'>
                     <div className='max-w-[220px]'>
@@ -48,6 +48,6 @@ export default function UserDetails({ userSummary }) {
             </div>
 
             <IdModal isOpen={isOpen} onOpenChange={onOpenChange} userSummary={userSummary} />
-        </React.Fragment>
+        </Fragment>
     );
 }

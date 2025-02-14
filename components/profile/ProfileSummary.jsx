@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { Fragment, useContext } from 'react';
 import AccountValue from './AccountValue';
 import SearchInput from './SearchInput';
 import GameProgressBar from './GameProgressBar';
@@ -15,7 +15,7 @@ export default function ProfileSummary({ steamId, countryCode, countryAbbr }) {
     if (!totals) return <PrivateGames steamId={steamId} />;
 
     return (
-        <React.Fragment>
+        <Fragment>
             <div className='flex justify-between items-center flex-col gap-4 lg:items-end lg:flex-row'>
                 <SearchInput countryCode={countryCode} countryAbbr={countryAbbr} />
             </div>
@@ -36,6 +36,6 @@ export default function ProfileSummary({ steamId, countryCode, countryAbbr }) {
             <div className='flex items-start flex-col gap-4'>
                 <ShareableImage />
             </div>
-        </React.Fragment>
+        </Fragment>
     );
 }

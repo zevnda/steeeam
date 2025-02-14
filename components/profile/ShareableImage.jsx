@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { Fragment, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Divider } from '@heroui/react';
@@ -20,7 +20,7 @@ export default function ShareableImage() {
     };
 
     return (
-        <React.Fragment>
+        <Fragment>
             <div className='flex flex-col w-full mt-14'>
                 <div className='flex justify-between items-center'>
                     <div className='flex items-center gap-1'>
@@ -77,6 +77,6 @@ export default function ShareableImage() {
                     <p className='font-medium'>Copied to clipboard</p>
                 </div>
             </div>
-        </React.Fragment>
+        </Fragment>
     );
 }

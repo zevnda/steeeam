@@ -1,10 +1,10 @@
-import React from 'react';
+import { Fragment } from 'react';
 import { Divider, Skeleton, Tooltip } from '@heroui/react';
 import { PiGraphBold } from 'react-icons/pi';
 
 export default function AccountValue({ totals }) {
     return (
-        <React.Fragment>
+        <Fragment>
             <div className='flex flex-col w-full mt-14'>
                 <div className='flex justify-between items-center'>
                     <div className='flex items-center gap-1'>
@@ -48,6 +48,6 @@ export default function AccountValue({ totals }) {
                     </div>
                 </div>
             </div>
-        </React.Fragment>
+        </Fragment>
     );
 }

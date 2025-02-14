@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { Fragment, useContext } from 'react';
 import { Divider, Spinner } from '@heroui/react';
 import { FaCheck } from 'react-icons/fa6';
 import { FaX } from 'react-icons/fa6';
@@ -8,7 +8,7 @@ export default function UserBans() {
     const { userBans } = useContext(UserDataContext);
 
     return (
-        <React.Fragment>
+        <Fragment>
             <Divider className='hidden bg-light-border mb-7 lg:block' />
             <div className='flex justify-center lg:block'>
                 <div className='grid grid-cols-4 grid-rows-3 text-sm lg:gap-y-2 lg:grid-cols-2 lg:max-w-[200px]'>
@@ -79,6 +79,6 @@ export default function UserBans() {
                     </div>
                 </div>
             </div>
-        </React.Fragment>
+        </Fragment>
     );
 }

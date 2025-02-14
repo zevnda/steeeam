@@ -1,4 +1,4 @@
-import React from 'react';
+import { Fragment } from 'react';
 import Link from 'next/link';
 import { Progress, Skeleton } from '@heroui/react';
 
@@ -6,18 +6,20 @@ export default function GameProgressBar({ steamId, playCount, totals }) {
 
     if (!playCount) {
         return (
-            <div className='w-full flex-grow lg:w-fit'>
-                <div className='flex flex-col gap-2'>
-                    <Skeleton className='w-[200px] h-[18px] rounded-full' />
-                    <Skeleton className='w-full h-[14px] rounded-full' />
-                    <Skeleton className='w-[120px] h-[16px] rounded-full' />
+            <Fragment>
+                <div className='w-full flex-grow lg:w-fit'>
+                    <div className='flex flex-col gap-2'>
+                        <Skeleton className='w-[200px] h-[18px] rounded-full' />
+                        <Skeleton className='w-full h-[14px] rounded-full' />
+                        <Skeleton className='w-[120px] h-[16px] rounded-full' />
+                    </div>
                 </div>
-            </div>
+            </Fragment>
         );
     }
 
     return (
-        <React.Fragment>
+        <Fragment>
             <div className='w-full flex-grow lg:w-fit'>
                 <Progress
                     value={playCount.playedCount ? playCount.playedCount : 0}
@@ -41,6 +43,6 @@ export default function GameProgressBar({ steamId, playCount, totals }) {
                     </p>
                 </Link>
             </div>
-        </React.Fragment >
+        </Fragment >
     );
 }

@@ -1,10 +1,11 @@
-import React, { useContext, useEffect } from 'react';
+import { Fragment, useContext, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '@/components/Layout';
 import Profile from '@/components/Profile';
 import { UserDataContext } from '@/components/UserDataContext';
+import Head from 'next/head';
 
-export default function Index({ userData, gamesList, gameData, userConnections, userExp, userBans }) {
+export default function Index({ userData, gamesList, gameData, userConnections, userExp, userBans, gameDetails }) {
     const router = useRouter();
     const { uid } = router.query;
     const {
@@ -16,7 +17,8 @@ export default function Index({ userData, gamesList, gameData, userConnections, 
         setPlayCount,
         setUserConnections,
         setUserExp,
-        setUserBans
+        setUserBans,
+        setGameDetails
     } = useContext(UserDataContext);
 
     useEffect(() => {
@@ -31,14 +33,22 @@ export default function Index({ userData, gamesList, gameData, userConnections, 
             setUserConnections(userConnections);
             setUserExp(userExp);
             setUserBans(userBans);
+            setGameDetails(gameDetails);
             setIsLoading(false);
         }
     }, [uid]);
 
     return (
-        <Layout>
+        <Fragment>
+            <Head>
+                <title>{`${userData.personaName} - Steeeam`}</title>
+                <meta name="description" content={`An overview of ${userData.personaName}'s Steam account including their library value, total playtime, average game cost, and more.`} />
+                <meta property='og:title' content={`${userData.personaName} - Steeeam`} />
+                <meta property="og:description" content={`An overview of ${userData.personaName}'s Steam account including their library value, total playtime, average game cost, and more.`} />
+                <meta property="og:image" content={userData.avatar} />
+            </Head>
             <Profile />
-        </Layout>
+        </Fragment>
     );
 }
 
@@ -68,6 +78,7 @@ export async function getServerSideProps(context) {
                 userConnections: data.userConnections,
                 userExp: data.userExp,
                 userBans: data.userBans,
+                gameDetails: data.gameDetails
             }
         };
     } catch (error) {
@@ -79,7 +90,8 @@ export async function getServerSideProps(context) {
                 gameData: null,
                 userConnections: null,
                 userExp: null,
-                userBans: null
+                userBans: null,
+                gameDetails: null
             }
         };
     }

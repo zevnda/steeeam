@@ -1,6 +1,6 @@
-import React, { useContext, useState } from 'react';
+import { Fragment, useContext, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Input, Button } from '@heroui/react';
+import { Input, Button, form } from '@heroui/react';
 import { FaArrowRight } from 'react-icons/fa';
 import { RiSearchLine } from 'react-icons/ri';
 import { formatSteamProfileUrl } from '@/utils/utils';
@@ -22,20 +22,25 @@ export default function SearchInput({ countryCode, countryAbbr }) {
     const [inputValue, setInputValue] = useState('');
 
     const handleSubmit = async () => {
-        setIsLoading(true);
-        clearData();
         if (inputValue.length > 0) {
-            const formatInput = formatSteamProfileUrl(inputValue);
-            if (countryCode) {
-                router.push({
-                    pathname: formatInput,
-                    query: {
-                        cc: countryCode,
-                        abbr: countryAbbr
-                    },
-                });
-            } else {
-                router.push(formatInput);
+            const formatInput = formatSteamProfileUrl(inputValue).replace(/^\//, '');
+            const currentPath = router.asPath.split('?')[0].replace(/^\//, '');
+
+            if (formatInput !== currentPath) {
+                setIsLoading(true);
+                clearData();
+
+                if (countryCode) {
+                    router.push({
+                        pathname: formatInput,
+                        query: {
+                            cc: countryCode,
+                            abbr: countryAbbr
+                        },
+                    });
+                } else {
+                    router.push(formatInput);
+                }
             }
             setInputValue('');
         }
@@ -63,7 +68,7 @@ export default function SearchInput({ countryCode, countryAbbr }) {
     };
 
     return (
-        <React.Fragment>
+        <Fragment>
             <div className='relative flex items-end w-full'>
                 <Input
                     size='lg'
@@ -97,6 +102,6 @@ export default function SearchInput({ countryCode, countryAbbr }) {
                     }}
                 />
             </div>
-        </React.Fragment>
+        </Fragment>
     );
 }

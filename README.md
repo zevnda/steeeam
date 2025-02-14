@@ -45,36 +45,36 @@ Personalize every aspect of your card by appending any of the options below, or 
 ```
 https://steeeam.vercel.app/api/zevnda
 ```
-<img src="./public/canvas/example1.png" width='300'/>
+<img src="./public/example1.png" width='300'/>
 
 ```
 https://steeeam.vercel.app/api/zevnda?theme=light
 ```
-<img src="./public/canvas/example2.png" width='300'/>
+<img src="./public/example2.png" width='300'/>
 
 ```
-https://steeeam.vercel.app/api/zevnda?bg_color=501b85&title_color=fff&text_color=db86d6&sub_title_color=e8b864&border_color=b32447&border_width=5&progbar_bg=b32447&progbar_color=5ebfc4
+https://steeeam.vercel.app/api/zevnda?bg_color=344e41&title_color=f6f4d2&text_color=e8f0fe&sub_title_color=a7c957&border_color=588157&border_width=5&progbar_bg=588157&progbar_color=a7c957
 ```
-<img src="./public/canvas/example3.png" width='300'/>
+<img src="./public/example3.png" width='300'/>
 
 ### Options
-| Name              | Description                                              | Type                                                        | Default value |
-| ----------------- | -------------------------------------------------------- | ----------------------------------------------------------- | ------------- |
-| `country_code`    | Display currency values for this country code.           | string ([alpha-2 code](https://www.iban.com/country-codes)) | `us`          |
-| `bg_color`        | Card's background color.                                 | string (hex color)                                          | `0b0b0b`      |
-| `title_color`     | Card's title color.                                      | string (hex color)                                          | `ffffff`      |
-| `sub_title_color` | Body sub-title color.                                    | string (hex color)                                          | `adadad`      |
-| `text_color`      | Body text color.                                         | string (hex color)                                          | `ffffff`      |
-| `username_color`  | Steam username text color.                               | string (hex color)                                          | `ffffff`      |
-| `id_color`        | Steam ID text color.                                     | string (hex color)                                          | `adadad`      |
-| `cp_color`        | Current price text color.                                | string (hex color)                                          | `f87171`      |
-| `ip_color`        | Initial price text color.                                | string (hex color)                                          | `4ade80`      |
-| `div_color`       | Body divider color.                                      | string (hex color)                                          | `ffffff`      |
-| `border_color`    | Card's border color.                                     | string (hex color)                                          | `ffffff30`    |
-| `border_width`    | Card's border width.                                     | number (0-10)                                               | `1`           |
-| `hide_border`     | Hide the card's border                                   | boolean                                                     | `false`       |
-| `progbar_bg`      | Progress bar background color.                           | string (hex color)                                          | `ffffff30`    |
-| `progbar_color`   | Progress bar foreground color.                           | string (hex color)                                          | `006fee`      |
-| `theme`           | Choose from 'light' or 'dark'. *(Overrides all options)* | enum                                                        | `dark`        |
+| Name              | Description                                              | Type                                               | Default value |
+| ----------------- | -------------------------------------------------------- | -------------------------------------------------- | ------------- |
+| `country_code`    | Display currency values for this country code.           | [alpha-2 code](https://www.iban.com/country-codes) | `us`          |
+| `bg_color`        | Card's background color.                                 | string (hex color)                                 | `0b0b0b`      |
+| `title_color`     | Card's title color.                                      | string (hex color)                                 | `ffffff`      |
+| `sub_title_color` | Body sub-title color.                                    | string (hex color)                                 | `adadad`      |
+| `text_color`      | Body text color.                                         | string (hex color)                                 | `ffffff`      |
+| `username_color`  | Steam username text color.                               | string (hex color)                                 | `ffffff`      |
+| `id_color`        | Steam ID text color.                                     | string (hex color)                                 | `adadad`      |
+| `cp_color`        | Current price text color.                                | string (hex color)                                 | `f87171`      |
+| `ip_color`        | Initial price text color.                                | string (hex color)                                 | `4ade80`      |
+| `div_color`       | Body divider color.                                      | string (hex color)                                 | `ffffff`      |
+| `border_color`    | Card's border color.                                     | string (hex color)                                 | `ffffff30`    |
+| `border_width`    | Card's border width.                                     | number (0-10)                                      | `1`           |
+| `hide_border`     | Hide the card's border                                   | boolean                                            | `false`       |
+| `progbar_bg`      | Progress bar background color.                           | string (hex color)                                 | `ffffff30`    |
+| `progbar_color`   | Progress bar foreground color.                           | string (hex color)                                 | `006fee`      |
+| `theme`           | Choose from 'light' or 'dark'. *(Overrides all options)* | enum                                               | `dark`        |
 
 ..more themes, options, and card layouts coming soon. If you would like to contribute your own ideas, please feel free to create a PR.

@@ -1,4 +1,4 @@
-import React from 'react';
+import { Fragment } from 'react';
 import { Skeleton, Tooltip } from '@heroui/react';
 import { pricePerHour } from '@/utils/utils';
 
@@ -6,29 +6,31 @@ export default function GameStats({ totals, countryAbbr }) {
 
     if (!totals) {
         return (
-            <div className='grid grid-cols-2 gap-y-4 w-full md:grid-cols-4 lg:w-auto lg:gap-x-10'>
-                <div className='flex items-center flex-col gap-5 lg:items-end'>
-                    <Skeleton className='w-[100px] h-[18px] rounded-full' />
-                    <Skeleton className='w-[150px] h-[18px] rounded-full' />
+            <Fragment>
+                <div className='grid grid-cols-2 gap-y-4 w-full md:grid-cols-4 lg:w-auto lg:gap-x-10'>
+                    <div className='flex items-center flex-col gap-5 lg:items-end'>
+                        <Skeleton className='w-[100px] h-[18px] rounded-full' />
+                        <Skeleton className='w-[150px] h-[18px] rounded-full' />
+                    </div>
+                    <div className='flex items-center flex-col gap-5 lg:items-end'>
+                        <Skeleton className='w-[100px] h-[18px] rounded-full' />
+                        <Skeleton className='w-[150px] h-[18px] rounded-full' />
+                    </div>
+                    <div className='flex items-center flex-col gap-5 lg:items-end'>
+                        <Skeleton className='w-[100px] h-[18px] rounded-full' />
+                        <Skeleton className='w-[150px] h-[18px] rounded-full' />
+                    </div>
+                    <div className='flex items-center flex-col gap-5 lg:items-end'>
+                        <Skeleton className='w-[100px] h-[18px] rounded-full' />
+                        <Skeleton className='w-[150px] h-[18px] rounded-full' />
+                    </div>
                 </div>
-                <div className='flex items-center flex-col gap-5 lg:items-end'>
-                    <Skeleton className='w-[100px] h-[18px] rounded-full' />
-                    <Skeleton className='w-[150px] h-[18px] rounded-full' />
-                </div>
-                <div className='flex items-center flex-col gap-5 lg:items-end'>
-                    <Skeleton className='w-[100px] h-[18px] rounded-full' />
-                    <Skeleton className='w-[150px] h-[18px] rounded-full' />
-                </div>
-                <div className='flex items-center flex-col gap-5 lg:items-end'>
-                    <Skeleton className='w-[100px] h-[18px] rounded-full' />
-                    <Skeleton className='w-[150px] h-[18px] rounded-full' />
-                </div>
-            </div>
+            </Fragment>
         );
     }
 
     return (
-        <React.Fragment>
+        <Fragment>
             <div className='grid grid-cols-2 gap-x-4 gap-y-4 w-full md:grid-cols-5 lg:w-auto lg:gap-x-7'>
                 <Tooltip closeDelay={0} className='bg-tooltip' content='All free and paid games in the user&apos;s library'>
                     <div className='flex items-center flex-col lg:items-start'>
@@ -85,6 +87,6 @@ export default function GameStats({ totals, countryAbbr }) {
                     </div>
                 </Tooltip>
             </div>
-        </React.Fragment>
+        </Fragment>
     );
 }

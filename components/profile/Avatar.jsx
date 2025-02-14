@@ -1,10 +1,10 @@
-import React from 'react';
+import { Fragment } from 'react';
 import Image from 'next/image';
 import { Tooltip } from '@heroui/react';
 
 export default function Avatar({ userSummary }) {
     return (
-        <React.Fragment>
+        <Fragment>
             {userSummary.onlineState === 'offline' ? (
                 <div className='relative w-fit'>
                     <Image
@@ -34,6 +34,6 @@ export default function Avatar({ userSummary }) {
                     </Tooltip>
                 </div>
             )}
-        </React.Fragment>
+        </Fragment>
     );
 }

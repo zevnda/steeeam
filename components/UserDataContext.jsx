@@ -12,6 +12,7 @@ export const UserDataProvider = ({ children }) => {
     const [userConnections, setUserConnections] = useState(null);
     const [userExp, setUserExp] = useState(null);
     const [userBans, setUserBans] = useState(null);
+    const [gameDetails, setGameDetails] = useState(null);
 
     const contextValue = {
         isLoading, setIsLoading,
@@ -22,7 +23,8 @@ export const UserDataProvider = ({ children }) => {
         playCount, setPlayCount,
         userConnections, setUserConnections,
         userExp, setUserExp,
-        userBans, setUserBans
+        userBans, setUserBans,
+        gameDetails, setGameDetails
     };
 
     return (

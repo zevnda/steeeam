@@ -1,11 +1,11 @@
-import React from 'react';
+import { Fragment } from 'react';
 import Link from 'next/link';
 import { Button } from '@heroui/react';
 import SearchInput from './profile/SearchInput';
 
 export default function PrivateGames({ steamId }) {
     return (
-        <React.Fragment>
+        <Fragment>
             <div className='flex justify-center w-full h-full'>
                 <div className='relative flex justify-center items-center flex-col gap-8 w-full h-3/4 bg-base border border-light-border p-4 rounded-md lg:w-3/4 lg:h-1/2'>
                     <p className='text-4xl font-bold text-center'>Uh-oh!</p>
@@ -18,6 +18,6 @@ export default function PrivateGames({ steamId }) {
                     <SearchInput />
                 </div>
             </div>
-        </React.Fragment>
+        </Fragment>
     );
 }

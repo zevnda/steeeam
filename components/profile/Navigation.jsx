@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { TiArrowBack } from 'react-icons/ti';
@@ -20,7 +20,7 @@ export default function Navigation() {
     }, [theme]);
 
     return (
-        <React.Fragment>
+        <Fragment>
             <div className='relative flex justify-between items-center w-full'>
                 <Link href={'/'} className='z-50'>
                     <div className='flex justify-center items-center w-[30px] h-[30px] bg-pop text-white dark:text-black rounded-md cursor-pointer hover:opacity-[.8]'>
@@ -37,6 +37,6 @@ export default function Navigation() {
                     </Link>
                 </div>
             </div>
-        </React.Fragment>
+        </Fragment>
     );
 }

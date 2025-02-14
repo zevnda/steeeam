@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { Fragment, useContext } from 'react';
 import { Progress, Skeleton } from '@heroui/react';
 import { UserDataContext } from '../UserDataContext';
 
@@ -18,9 +18,9 @@ export default function ExpProgressBar() {
     }
 
     return (
-        <React.Fragment>
+        <Fragment>
             <div className='w-full flex-grow lg:w-fit'>
-                <React.Fragment>
+                <Fragment>
                     <Progress
                         value={userExp.requiredXP - userExp.xpRemaining}
                         maxValue={userExp.requiredXP}
@@ -29,18 +29,16 @@ export default function ExpProgressBar() {
                         showValueLabel
                         valueLabel={`Level ${userExp.level}`}
                         label={
-                            <React.Fragment>
-                                <p>
-                                    <span className='font-bold text-blue-400'>{userExp.xpRemaining}</span> XP to next level
-                                </p>
-                            </React.Fragment>
+                            <p>
+                                <span className='font-bold text-blue-400'>{userExp.xpRemaining}</span> XP to next level
+                            </p>
                         }
                         classNames={{
                             value: ['font-medium']
                         }}
                     />
-                </React.Fragment>
+                </Fragment>
             </div>
-        </React.Fragment >
+        </Fragment >
     );
 }

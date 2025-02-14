@@ -1,11 +1,11 @@
-import React from 'react';
+import { Fragment } from 'react';
 import SearchInput from './landing/SearchInput';
 import Footer from './Footer';
 import Header from './Header';
 
 export default function Landing() {
     return (
-        <React.Fragment>
+        <Fragment>
             <div className='h-screen'>
                 <Header />
 
@@ -17,6 +17,6 @@ export default function Landing() {
                     <Footer />
                 </div>
             </div>
-        </React.Fragment>
+        </Fragment>
     );
 }

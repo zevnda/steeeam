@@ -9,9 +9,12 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-svg-core": "^6.7.2",
+        "@fortawesome/free-solid-svg-icons": "^6.7.2",
         "@heroui/react": "^2.6.14",
         "@napi-rs/canvas": "^0.1.52",
         "axios": "^1.6.8",
+        "convert-svg-to-png": "^0.6.4",
         "eslint-config-next": "14.2.3",
         "framer-motion": "^11.1.7",
         "geist": "^1.3.0",
@@ -26,7 +29,8 @@
         "steam-level": "^0.0.2",
         "steamapi": "^3.0.8",
         "steamid": "^2.0.0",
-        "steamid-resolver": "^1.3.4"
+        "steamid-resolver": "^1.3.4",
+        "svg-to-dataurl": "^1.0.0"
     },
     "devDependencies": {
         "eslint": "^8.57.0",

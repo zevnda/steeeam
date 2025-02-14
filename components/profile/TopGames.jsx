@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import { Fragment, useState, useContext } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { IoGameController } from 'react-icons/io5';
@@ -27,7 +27,7 @@ export default function TopGames({ steamId, countryCode }) {
     };
 
     return (
-        <React.Fragment>
+        <Fragment>
             <div className='flex flex-col w-full mt-14'>
                 <div className='flex justify-between items-center'>
                     <div className='flex items-center gap-1'>
@@ -61,13 +61,19 @@ export default function TopGames({ steamId, countryCode }) {
                                         />
                                     </Skeleton>
 
-                                    <GameDetails gameId={item.game.id} minutes={item.minutes} lastPlayedTimestamp={item.lastPlayedTimestamp} countryCode={countryCode} />
+                                    <GameDetails
+                                        gameName={item.game.name}
+                                        gameId={item.game.id}
+                                        minutes={item.minutes}
+                                        lastPlayedTimestamp={item.lastPlayedTimestamp}
+                                        countryCode={countryCode}
+                                    />
                                 </div>
                             </div>
                         </Link>
                     ))}
                 </div>
             </div>
-        </React.Fragment>
+        </Fragment>
     );
 }
