@@ -143,7 +143,8 @@ async function getGameData(steamId, countryCode, countryAbbr) {
             const gamePrices = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${chunkString}&filters=price_overview&cc=${countryCode}`);
 
             // Process response data for each chunk
-            for (const [gameData] of Object.entries(gamePrices.data)) {
+            /* eslint-disable-next-line no-unused-vars */
+            for (const [_, gameData] of Object.entries(gamePrices.data)) {
                 if (gameData.data && gameData.data.price_overview) {
                     const finalPrice = gameData.data.price_overview.final || null;
                     const initialPrice = gameData.data.price_overview.initial || null;

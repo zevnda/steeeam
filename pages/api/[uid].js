@@ -37,7 +37,7 @@ async function getUserData(uid) {
         };
     } catch (e) {
         console.error(e);
-        return { message: 'Error' };
+        return { error: 'no user' };
     }
 }
 
@@ -56,10 +56,7 @@ async function getGameData(uid, countryCode) {
             includeFreeGames: true,
             includeFreeSubGames: true,
             includeUnvettedApps: true
-        })
-            .catch(() => {
-                return { message: 'Private games' };
-            });
+        });
 
         // Get appIds and played/unplayed game counts
         let gameIds = [];
@@ -85,7 +82,6 @@ async function getGameData(uid, countryCode) {
         }
 
         // Make multiple HTTP calls for each chunk
-        let responseData = [];
         let prices = [];
         let totalInitial = 0;
         let totalFinal = 0;
@@ -94,12 +90,12 @@ async function getGameData(uid, countryCode) {
             const gamePrices = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${chunkString}&filters=price_overview&cc=${countryCode}`);
 
             // Process response data for each chunk
-            for (const [gameId, gameData] of Object.entries(gamePrices.data)) {
+            /* eslint-disable-next-line no-unused-vars */
+            for (const [_, gameData] of Object.entries(gamePrices.data)) {
                 if (gameData.data && gameData.data.price_overview) {
                     const finalPrice = gameData.data.price_overview.final || null;
                     const initialPrice = gameData.data.price_overview.initial || null;
 
-                    responseData.push({ [gameId]: gameData.data.price_overview });
                     prices.push(initialPrice);
 
                     totalInitial += initialPrice;
@@ -123,7 +119,7 @@ async function getGameData(uid, countryCode) {
         };
     } catch (e) {
         console.error(e);
-        return { message: 'Error' };
+        return { error: 'private games' };
     }
 }
 
@@ -317,121 +313,127 @@ async function createFullCanvas(
     ctx.lineTo(canvas.width - 15, 50);
     ctx.stroke();
 
-    // Account value
-    // Current
-    ctx.fillStyle = `#${sub_title_color}`;
-    ctx.font = '16px Geist';
-    ctx.fillText('Current Price', 215, 80);
-    ctx.fillStyle = `#${cp_color}`;
-    ctx.font = '600 26px Geist';
-    ctx.fillText(`${gameData.totals?.totalFinalFormatted || '$0'}`, 215, 110);
-    //Initial
-    ctx.fillStyle = `#${sub_title_color}`;
-    ctx.font = '16px Geist';
-    ctx.fillText('Initial Price', 370, 80);
-    ctx.fillStyle = `#${ip_color}`;
-    ctx.font = '600 26px Geist';
-    ctx.fillText(`${gameData.totals?.totalInitialFormatted || '$0'}`, 370, 110);
+    if (!gameData.error) {
+        // Account value
+        // Current
+        ctx.fillStyle = `#${sub_title_color}`;
+        ctx.font = '16px Geist';
+        ctx.fillText('Current Price', 215, 80);
+        ctx.fillStyle = `#${cp_color}`;
+        ctx.font = '600 26px Geist';
+        ctx.fillText(`${gameData.totals?.totalFinalFormatted || '$0'}`, 215, 110);
+        //Initial
+        ctx.fillStyle = `#${sub_title_color}`;
+        ctx.font = '16px Geist';
+        ctx.fillText('Initial Price', 370, 80);
+        ctx.fillStyle = `#${ip_color}`;
+        ctx.font = '600 26px Geist';
+        ctx.fillText(`${gameData.totals?.totalInitialFormatted || '$0'}`, 370, 110);
 
-    // Game stats
-    // Total games
-    ctx.fillStyle = `#${sub_title_color}`;
-    ctx.font = '16px Geist';
-    ctx.fillText('Total Games', 215, 160);
-    ctx.fillStyle = `#${text_color}`;
-    ctx.font = '600 26px Geist';
-    ctx.fillText(`${gameData.totals?.totalGames || '0'}`, 215, 190);
-    // Average price
-    ctx.fillStyle = `#${sub_title_color}`;
-    ctx.font = '16px Geist';
-    ctx.fillText('Avg. Price', 370, 160);
-    ctx.fillStyle = `#${text_color}`;
-    ctx.font = '600 26px Geist';
-    ctx.fillText(`${gameData.totals?.averageGamePrice || '$0'}`, 370, 190);
-    // Price per hour
-    ctx.fillStyle = `#${sub_title_color}`;
-    ctx.font = '16px Geist';
-    ctx.fillText('Price Per Hour', 510, 160);
-    ctx.fillStyle = `#${text_color}`;
-    ctx.font = '600 26px Geist';
-    ctx.fillText(`${pricePerHour(gameData.totals?.totalFinalFormatted, gameData.totals?.totalPlaytimeHours) || '0'}`, 510, 190);
-    // Average playtime
-    ctx.fillStyle = `#${sub_title_color}`;
-    ctx.font = '16px Geist';
-    ctx.fillText('Avg. Playtime', 215, 240);
-    ctx.fillStyle = `#${text_color}`;
-    ctx.font = '600 26px Geist';
-    ctx.fillText(`${gameData.totals?.averagePlaytime || '0'}h`, 215, 270);
-    // Total playtime
-    ctx.fillStyle = `#${sub_title_color}`;
-    ctx.font = '16px Geist';
-    ctx.fillText('Total Playtime', 370, 240);
-    ctx.fillStyle = `#${text_color}`;
-    ctx.font = '600 26px Geist';
-    ctx.fillText(`${gameData.totals?.totalPlaytimeHours || '0'}h`, 370, 270);
-
-    // Game progress bar
-    const playedCount = gameData.playCount?.playedCount.toString() || '0';
-    const gameCount = gameData.totals?.totalGames.toString() || '0';
-    const progressPercent = ((parseInt(playedCount) / parseInt(gameCount)) * 100).toFixed(0);
-    if (!isNaN(progressPercent)) {
-        ctx.fillStyle = `#${progbar_color}`;
-        ctx.font = '700 14px Geist';
-        ctx.fillText(playedCount, 215, 324);
+        // Game stats
+        // Total games
+        ctx.fillStyle = `#${sub_title_color}`;
+        ctx.font = '16px Geist';
+        ctx.fillText('Total Games', 215, 160);
         ctx.fillStyle = `#${text_color}`;
-        ctx.font = '14px Geist';
-        ctx.fillText('/', (ctx.measureText(playedCount).width + 215) + 5, 324);
-        ctx.fillStyle = `#${progbar_color}`;
-        ctx.font = '700 14px Geist';
-        ctx.fillText(gameCount, (ctx.measureText(playedCount).width + 215) + 15, 324);
+        ctx.font = '600 26px Geist';
+        ctx.fillText(`${gameData.totals?.totalGames || '0'}`, 215, 190);
+        // Average price
+        ctx.fillStyle = `#${sub_title_color}`;
+        ctx.font = '16px Geist';
+        ctx.fillText('Avg. Price', 370, 160);
         ctx.fillStyle = `#${text_color}`;
-        ctx.font = '14px Geist';
-        ctx.fillText('games played', (ctx.measureText(playedCount).width + ctx.measureText(gameCount).width) + 215 + 20, 324);
-        ctx.font = '700 14px Geist';
-        ctx.fillText(`${progressPercent}%`, 405, 324);
-    }
+        ctx.font = '600 26px Geist';
+        ctx.fillText(`${gameData.totals?.averageGamePrice || '$0'}`, 370, 190);
+        // Price per hour
+        ctx.fillStyle = `#${sub_title_color}`;
+        ctx.font = '16px Geist';
+        ctx.fillText('Price Per Hour', 510, 160);
+        ctx.fillStyle = `#${text_color}`;
+        ctx.font = '600 26px Geist';
+        ctx.fillText(`${pricePerHour(gameData.totals?.totalFinalFormatted, gameData.totals?.totalPlaytimeHours) || '0'}`, 510, 190);
+        // Average playtime
+        ctx.fillStyle = `#${sub_title_color}`;
+        ctx.font = '16px Geist';
+        ctx.fillText('Avg. Playtime', 215, 240);
+        ctx.fillStyle = `#${text_color}`;
+        ctx.font = '600 26px Geist';
+        ctx.fillText(`${gameData.totals?.averagePlaytime || '0'}h`, 215, 270);
+        // Total playtime
+        ctx.fillStyle = `#${sub_title_color}`;
+        ctx.font = '16px Geist';
+        ctx.fillText('Total Playtime', 370, 240);
+        ctx.fillStyle = `#${text_color}`;
+        ctx.font = '600 26px Geist';
+        ctx.fillText(`${gameData.totals?.totalPlaytimeHours || '0'}h`, 370, 270);
 
-    async function createRoundedProgressBar(barwidth, barheight, progress, barColor, backgroundColor, borderRadius) {
-        if (isNaN(progress)) return;
-        ctx.fillStyle = backgroundColor;
-        roundRect(ctx, 215, 330, barwidth, barheight, borderRadius, true, false);
-        const barWidth = Math.floor(barwidth * (progress / 100));
-        ctx.fillStyle = barColor;
-        roundRect(ctx, 215, 330, barWidth, barheight, borderRadius, true, true);
-    }
+        // Game progress bar
+        const playedCount = gameData.playCount?.playedCount.toString() || '0';
+        const gameCount = gameData.totals?.totalGames.toString() || '0';
+        const progressPercent = ((parseInt(playedCount) / parseInt(gameCount)) * 100).toFixed(0);
+        if (!isNaN(progressPercent)) {
+            ctx.fillStyle = `#${progbar_color}`;
+            ctx.font = '700 14px Geist';
+            ctx.fillText(playedCount, 215, 324);
+            ctx.fillStyle = `#${text_color}`;
+            ctx.font = '14px Geist';
+            ctx.fillText('/', (ctx.measureText(playedCount).width + 215) + 5, 324);
+            ctx.fillStyle = `#${progbar_color}`;
+            ctx.font = '700 14px Geist';
+            ctx.fillText(gameCount, (ctx.measureText(playedCount).width + 215) + 15, 324);
+            ctx.fillStyle = `#${text_color}`;
+            ctx.font = '14px Geist';
+            ctx.fillText('games played', (ctx.measureText(playedCount).width + ctx.measureText(gameCount).width) + 215 + 20, 324);
+            ctx.font = '700 14px Geist';
+            ctx.fillText(`${progressPercent}%`, 405, 324);
+        }
 
-    async function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
-        if (typeof stroke === 'undefined') {
-            stroke = true;
+        async function createRoundedProgressBar(barwidth, barheight, progress, barColor, backgroundColor, borderRadius) {
+            if (isNaN(progress)) return;
+            ctx.fillStyle = backgroundColor;
+            roundRect(ctx, 215, 330, barwidth, barheight, borderRadius, true, false);
+            const barWidth = Math.floor(barwidth * (progress / 100));
+            ctx.fillStyle = barColor;
+            roundRect(ctx, 215, 330, barWidth, barheight, borderRadius, true, true);
         }
-        if (typeof radius === 'undefined') {
-            radius = 5;
+
+        async function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+            if (typeof stroke === 'undefined') {
+                stroke = true;
+            }
+            if (typeof radius === 'undefined') {
+                radius = 5;
+            }
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.arcTo(x + width, y, x + width, y + radius, radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
+            ctx.lineTo(x + radius, y + height);
+            ctx.arcTo(x, y + height, x, y + height - radius, radius);
+            ctx.lineTo(x, y + radius);
+            ctx.arcTo(x, y, x + radius, y, radius);
+            ctx.closePath();
+            if (stroke) {
+                ctx.stroke();
+            }
+            if (fill) {
+                ctx.fill();
+            }
         }
-        ctx.beginPath();
-        ctx.moveTo(x + radius, y);
-        ctx.lineTo(x + width - radius, y);
-        ctx.arcTo(x + width, y, x + width, y + radius, radius);
-        ctx.lineTo(x + width, y + height - radius);
-        ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
-        ctx.lineTo(x + radius, y + height);
-        ctx.arcTo(x, y + height, x, y + height - radius, radius);
-        ctx.lineTo(x, y + radius);
-        ctx.arcTo(x, y, x + radius, y, radius);
-        ctx.closePath();
-        if (stroke) {
-            ctx.stroke();
-        }
-        if (fill) {
-            ctx.fill();
-        }
+        const barwidth = 220;
+        const barheight = 12;
+        const progress = (parseInt(playedCount) / parseInt(gameCount)) * 100;
+        const barColor = `#${progbar_color}`;
+        const backgroundColor = `#${progbar_bg}`;
+        const borderRadius = 6;
+        await createRoundedProgressBar(barwidth, barheight, progress, barColor, backgroundColor, borderRadius);
+    } else {
+        ctx.fillStyle = `#${sub_title_color}`;
+        ctx.font = '16px Geist';
+        ctx.fillText('Private Games List', 390, 200);
     }
-    const barwidth = 220;
-    const barheight = 12;
-    const progress = (parseInt(playedCount) / parseInt(gameCount)) * 100;
-    const barColor = `#${progbar_color}`;
-    const backgroundColor = `#${progbar_bg}`;
-    const borderRadius = 6;
-    await createRoundedProgressBar(barwidth, barheight, progress, barColor, backgroundColor, borderRadius);
 
     // Avatar
     async function drawCenteredRoundedImage() {

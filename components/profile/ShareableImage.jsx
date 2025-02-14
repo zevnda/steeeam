@@ -2,7 +2,7 @@ import { Fragment, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Divider } from '@heroui/react';
-import { FaImage } from 'react-icons/fa';
+import { FaImage, FaRegCopy } from 'react-icons/fa';
 import { Accordion, AccordionItem } from '@heroui/react';
 import Image from 'next/image';
 
@@ -36,10 +36,11 @@ export default function ShareableImage() {
                 <div className='flex flex-col w-full gap-4'>
                     <p>This is your dynamically generated image URL</p>
 
-                    <div className='bg-neutral-200 dark:bg-neutral-800 p-2 rounded-md max-w-fit cursor-pointer' onClick={copyToClipboard}>
+                    <div className='flex items-center gap-2 bg-neutral-200 dark:bg-neutral-800 p-1.5 rounded-md max-w-fit cursor-pointer' onClick={copyToClipboard}>
                         <p className='text-sm text-dull truncate'>
                             https://steeeam.vercel.app/api/{uid}
                         </p>
+                        <FaRegCopy fontSize={16} />
                     </div>
 
                     <div className='w-full lg:max-w-[50%]'>
@@ -66,7 +67,7 @@ export default function ShareableImage() {
                                 <p>The URL allows you to share your Steam card directly in places like Discord channels, Facebook posts, GitHub markdown files, and more, by simply copying and pasting it where you want to share the image</p>
                             </AccordionItem>
                             <AccordionItem key='2' aria-label='Can I customize it?' title='Can I customize it?'>
-                                <p>Yep. Your Steam card is fully customizable, from the background color, to the text color. <Link href={'https://github.com/zevnda/steeeam?tab=readme-ov-file#shareable-image'} target='_blank'>Learn more here</Link>.</p>
+                                <p>Yes! Your Steam card is fully customizable, from the background color, to the text color. <Link href={'https://github.com/zevnda/steeeam?tab=readme-ov-file#shareable-image'} target='_blank'>Learn more here</Link>.</p>
                             </AccordionItem>
                         </Accordion>
                     </div>
