@@ -7,7 +7,7 @@ import { IoGameController } from 'react-icons/io5';
 import { FaMoneyBillWave } from 'react-icons/fa';
 import { UserDataContext } from '../UserDataContext';
 
-export default function GameDetails({ gameName, gameId, minutes, lastPlayedTimestamp, countryCode }) {
+export default function GameDetails({ gameName, gameId, minutes, lastPlayedTimestamp }) {
     const { gameDetails } = useContext(UserDataContext);
 
     if (!gameDetails) {

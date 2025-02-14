@@ -1,27 +1,11 @@
 <p align="center">
 <img src="./public/steeeam-og-image.png" width='400'/>
- <h1 align="center">Steeeam - Visualize your Steam account</h1>
- <p align="center">Calculate your game library value, total playtime, average game cost, and more. Dynamically generate a shareable card to brag (or cry) about your collection on Discord, GitHub, and other platforms.</p>
+<h1 align="center">
+    Steeeam - Visualize your Steam account
+</h1>
+<p align="center">
+    Calculate your game library value, total playtime, average game cost, and more. Dynamically generate a shareable card to brag (or cry) about your collection on Discord, GitHub, and other platforms.
 </p>
-  <p align="center">
-    <a href="https://github.com/zevnda/steeeam/graphs/contributors">
-      <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/zevnda/steeeam" />
-    </a>
-    <a href="https://github.com/zevnda/steeeam/issues">
-      <img alt="Issues" src="https://img.shields.io/github/issues/zevnda/steeeam?color=0088ff" />
-    </a>
-    <a href="https://github.com/zevnda/steeeam/pulls">
-      <img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr/zevnda/steeeam?color=0088ff" />
-    </a>
-    <a href="https://securityscorecards.dev/viewer/?uri=github.com/zevnda/steeeam">
-      <img alt="OpenSSF Scorecard" src="https://api.securityscorecards.dev/projects/github.com/zevnda/steeeam/badge" />
-    </a>
-    <br />
-    <br />
-    <a href="https://vercel.com">
-      <img src="https://raw.githubusercontent.com/zevnda/steeeam/master/powered-by-vercel.svg"/>
-    </a>
-  </p>
 
 # Shareable image
 Dynamically generate your Steam card image directly in places like Discord channels, GitHub markdown files, and Facebook posts.

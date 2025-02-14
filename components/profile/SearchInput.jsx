@@ -1,6 +1,6 @@
 import { Fragment, useContext, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Input, Button, form } from '@heroui/react';
+import { Input, Button } from '@heroui/react';
 import { FaArrowRight } from 'react-icons/fa';
 import { RiSearchLine } from 'react-icons/ri';
 import { formatSteamProfileUrl } from '@/utils/utils';

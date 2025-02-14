@@ -1,6 +1,5 @@
 import { Fragment, useContext, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Layout from '@/components/Layout';
 import Profile from '@/components/Profile';
 import { UserDataContext } from '@/components/UserDataContext';
 import Head from 'next/head';
