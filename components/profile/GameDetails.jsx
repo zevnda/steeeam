@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
-import { Skeleton } from '@nextui-org/react';
+import { Skeleton } from '@heroui/react';
 import { minutesToHoursCompact } from '@/utils/utils';
 import { MdAvTimer } from 'react-icons/md';
 import { IoGameController } from 'react-icons/io5';
@@ -11,13 +11,13 @@ export default function GameDetails({ gameId, minutes, lastPlayedTimestamp, coun
 
     useEffect(() => {
         const fetchData = async () => {
-            const gameDetailsResponse = await fetch(`/api/route`, {
+            const gameDetailsResponse = await fetch('/api/route', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ route: 'game-details', gameId: gameId, countryCode: countryCode }),
             }).then(res => res.json());
             setGameDetails(gameDetailsResponse);
-        }
+        };
         fetchData();
     }, [gameId]);
 
@@ -30,13 +30,15 @@ export default function GameDetails({ gameId, minutes, lastPlayedTimestamp, coun
                     <Skeleton className='rounded-lg w-1/2 h-[16px]' />
                 </div>
             </div>
-        )
+        );
     }
 
     return (
         <React.Fragment>
-            <div className='flex flex-col justify-between text-black dark:text-white w-full py-1'>
-                <p className='font-bold'>{gameDetails.name}</p>
+            <div className='flex flex-col justify-between text-black dark:text-white w-full overflow-hidden py-1'>
+                <p className='font-bold truncate'>
+                    {gameDetails.name}
+                </p>
 
                 <div className='hidden gap-4 py-1 flex-wrap mt-5 md:mt-0 md:gap-10 md:flex'>
                     <div className='flex flex-col text-sm'>
@@ -59,7 +61,7 @@ export default function GameDetails({ gameId, minutes, lastPlayedTimestamp, coun
                             <p className='text-md font-medium uppercase text-dull'>Last Played</p>
                         </div>
                         {lastPlayedTimestamp > 0 ? (
-                            <p>{moment.unix(lastPlayedTimestamp).format("MMM D, YYYY")}</p>
+                            <p>{moment.unix(lastPlayedTimestamp).format('MMM D, YYYY')}</p>
                         ) : (
                             <p>-</p>
                         )}
@@ -81,19 +83,17 @@ export default function GameDetails({ gameId, minutes, lastPlayedTimestamp, coun
                 <div className='grid grid-cols-1 w-full mt-2 py-1 flex-wrap sm:gap-4 sm:grid-cols-3 md:hidden'>
                     <div className='flex items-center justify-start gap-1 text-sm'>
                         <MdAvTimer className='text-yellow-400' fontSize={20} />
-                        {parseInt(minutesToHoursCompact(minutes)) > 1 ? (
-                            <p>{minutesToHoursCompact(minutes)} hours</p>
-                        ) : parseInt(minutesToHoursCompact(minutes)) === 0 ? (
-                            <p>Never played</p>
-                        ) : (
-                            <p>{minutesToHoursCompact(minutes)} hour</p>
-                        )}
+                        <p className='truncate'>
+                            {minutesToHoursCompact(minutes)} hours
+                        </p>
                     </div>
 
                     <div className='flex items-center justify-start gap-1 text-sm'>
                         <IoGameController className='text-blue-400' fontSize={20} />
                         {lastPlayedTimestamp > 0 ? (
-                            <p>{moment.unix(lastPlayedTimestamp).format("MMM D, YYYY")}</p>
+                            <p className='truncate'>
+                                {moment.unix(lastPlayedTimestamp).format('MMM D, YYYY')}
+                            </p>
                         ) : (
                             <p>-</p>
                         )}
@@ -102,7 +102,9 @@ export default function GameDetails({ gameId, minutes, lastPlayedTimestamp, coun
                     <div className='flex items-center justify-start flex-grow gap-1 text-sm'>
                         <FaMoneyBillWave className='text-green-400' fontSize={20} />
                         {gameDetails.price_overview ? (
-                            <p>{gameDetails.price_overview.final_formatted}</p>
+                            <p className='truncate'>
+                                {gameDetails.price_overview.final_formatted}
+                            </p>
                         ) : (
                             <p>Free</p>
                         )}
@@ -110,5 +112,5 @@ export default function GameDetails({ gameId, minutes, lastPlayedTimestamp, coun
                 </div>
             </div>
         </React.Fragment>
-    )
+    );
 }

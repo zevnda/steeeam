@@ -1,17 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { Spinner } from '@nextui-org/react';
+import { Spinner } from '@heroui/react';
 import { useTheme } from 'next-themes';
 
 export default function Loader() {
-    const { resolvedTheme } = useTheme();
+    const { theme } = useTheme();
+    const [logoSrc, setLogoSrc] = useState('');
+
+    useEffect(() => {
+        setLogoSrc(
+            theme === 'dark'
+                ? '/logo-white.svg'
+                : '/logo-black.svg'
+        );
+    }, [theme]);
 
     return (
-        <div className='flex justify-center items-center w-full h-screen'>
+        <div className='flex justify-center items-center w-screen h-screen'>
             <div className='absolute'>
-                <Image src={resolvedTheme === 'dark' ? '/logo-white.svg' : '/logo-black.svg'} width={18} height={18} alt='steeeam logo' />
+                {logoSrc && (<Image src={logoSrc} width={18} height={18} alt='steeeam logo' />)}
             </div>
             <Spinner size='lg' color='current' />
         </div>
-    )
+    );
 }

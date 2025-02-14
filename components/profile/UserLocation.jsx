@@ -1,9 +1,9 @@
 import React from 'react';
 import moment from 'moment';
-import { Tooltip } from '@nextui-org/react';
-import { FaMapMarkerAlt } from "react-icons/fa";
-import { FaEye } from "react-icons/fa";
-import { BiSolidCake } from "react-icons/bi";
+import { Tooltip } from '@heroui/react';
+import { FaMapMarkerAlt } from 'react-icons/fa';
+import { FaEye } from 'react-icons/fa';
+import { BiSolidCake } from 'react-icons/bi';
 import { getRelativeTimeImprecise } from '@/utils/utils';
 
 export default function UserLocation({ userSummary }) {
@@ -40,5 +40,5 @@ export default function UserLocation({ userSummary }) {
                 </div>
             </div>
         </React.Fragment>
-    )
+    );
 }

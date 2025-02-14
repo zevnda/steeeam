@@ -1,8 +1,19 @@
-import React from 'react';
-import { Select, SelectItem } from '@nextui-org/react';
-import { countryCodes } from '@/constants/constants';
+import React, { useContext } from 'react';
+import { Select, SelectItem } from '@heroui/react';
+import { UserDataContext } from '../UserDataContext';
 
 export default function CurrencySelect({ setCountryCode, setCountryAbbr }) {
+    const { isLoading } = useContext(UserDataContext);
+
+    const countryCodes = [
+        { label: 'Australian Dollar', value: 'au' },
+        { label: 'British Pound', value: 'uk' },
+        { label: 'Canadian Dollar', value: 'ca' },
+        { label: 'Euro', value: 'eu' },
+        { label: 'New Zealand Dollar', value: 'nz' },
+        { label: 'US Dollar', value: 'us' },
+    ];
+
     const handleSelection = (e) => {
         setCountryCode(e.currentKey);
         if (e.currentKey === 'au') setCountryAbbr('AUD');
@@ -20,6 +31,7 @@ export default function CurrencySelect({ setCountryCode, setCountryAbbr }) {
             aria-label='currency'
             label='Currency'
             onSelectionChange={handleSelection}
+            isDisabled={isLoading}
             className='w-full lg:w-[300px]'
             classNames={{
                 trigger: [
@@ -45,5 +57,5 @@ export default function CurrencySelect({ setCountryCode, setCountryAbbr }) {
                 </SelectItem>
             ))}
         </Select>
-    )
+    );
 }

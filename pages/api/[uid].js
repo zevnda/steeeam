@@ -1,19 +1,27 @@
 import { getRelativeTimeImprecise, resolveVanityUrl, getAverage, minutesToHoursPrecise, minutesToHoursCompact, pricePerHour } from '@/utils/utils';
 import { createCanvas, loadImage, GlobalFonts } from '@napi-rs/canvas';
-import SteamAPI from "steamapi";
+import SteamAPI from 'steamapi';
 import * as sidr from 'steamid-resolver';
 import moment from 'moment';
 import path from 'path';
 import axios from 'axios';
 
+const cache = new Map();
+
 async function getUserData(uid) {
     try {
-        const steamId = await resolveVanityUrl(uid);
+        let steamId = cache.get(uid);
+        if (!steamId) {
+            steamId = await resolveVanityUrl(uid);
+            cache.set(uid, steamId);
+        }
 
         const sapi = new SteamAPI(process.env.STEAM_API_KEY);
 
-        const userSummary = await sapi.getUserSummary(steamId);
-        const sidrSummary = await sidr.steamID64ToFullInfo(steamId);
+        const [userSummary, sidrSummary] = await Promise.all([
+            sapi.getUserSummary(steamId),
+            sidr.steamID64ToFullInfo(steamId)
+        ]);
 
         return {
             steamId: steamId,
@@ -33,13 +41,22 @@ async function getUserData(uid) {
     }
 }
 
-async function getGameData(uid) {
+async function getGameData(uid, countryCode) {
     try {
-        const steamId = await resolveVanityUrl(uid);
+        let steamId = cache.get(uid);
+        if (!steamId) {
+            steamId = await resolveVanityUrl(uid);
+            cache.set(uid, steamId);
+        }
 
         const sapi = new SteamAPI(process.env.STEAM_API_KEY);
 
-        const userGames = await sapi.getUserOwnedGames(steamId, { includeExtendedAppInfo: true, includeFreeGames: true, includeFreeSubGames: true, includeUnvettedApps: true })
+        const userGames = await sapi.getUserOwnedGames(steamId, {
+            includeExtendedAppInfo: true,
+            includeFreeGames: true,
+            includeFreeSubGames: true,
+            includeUnvettedApps: true
+        })
             .catch(() => {
                 return { message: 'Private games' };
             });
@@ -72,9 +89,9 @@ async function getGameData(uid) {
         let prices = [];
         let totalInitial = 0;
         let totalFinal = 0;
-        for (const chunk of gameIdChunks) {
+        await Promise.all(gameIdChunks.map(async (chunk) => {
             const chunkString = chunk.join(',');
-            const gamePrices = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${chunkString}&filters=price_overview`);
+            const gamePrices = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${chunkString}&filters=price_overview&cc=${countryCode}`);
 
             // Process response data for each chunk
             for (const [gameId, gameData] of Object.entries(gamePrices.data)) {
@@ -89,7 +106,7 @@ async function getGameData(uid) {
                     totalFinal += finalPrice;
                 }
             }
-        }
+        }));
 
         // Format totals
         const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
@@ -113,6 +130,7 @@ async function getGameData(uid) {
 export default async function handler(req, res) {
     const {
         uid,
+        country_code,
         bg_color,
         title_color,
         sub_title_color,
@@ -130,10 +148,10 @@ export default async function handler(req, res) {
         theme
     } = req.query;
 
-    let canvasBuffer;
+    res.setHeader('Cache-Control', 'public, max-age=14400, s-maxage=14400, stale-while-revalidate=86400');
 
-    const userData = await getUserData(uid);
-    const gameData = await getGameData(uid);
+    let canvasBuffer;
+    const [userData, gameData] = await Promise.all([getUserData(uid), getGameData(uid, country_code)]);
 
     canvasBuffer = await createFullCanvas(
         userData,
@@ -180,27 +198,27 @@ async function createFullCanvas(
 ) {
     // Themes
     // Dark
-    if (theme === 'dark') bg_color = `0b0b0b`;
-    if (theme === 'dark') title_color = `fff`;
-    if (theme === 'dark') sub_title_color = `adadad`;
-    if (theme === 'dark') text_color = `fff`;
-    if (theme === 'dark') username_color = `fff`;
-    if (theme === 'dark') id_color = `adadad`;
-    if (theme === 'dark') div_color = `ffffff30`;
-    if (theme === 'dark') border_color = `ffffff30`;
-    if (theme === 'dark') progbar_bg = `ffffff30`;
-    if (theme === 'dark') progbar_color = `006fee`;
+    if (theme === 'dark') bg_color = '0b0b0b';
+    if (theme === 'dark') title_color = 'fff';
+    if (theme === 'dark') sub_title_color = 'adadad';
+    if (theme === 'dark') text_color = 'fff';
+    if (theme === 'dark') username_color = 'fff';
+    if (theme === 'dark') id_color = 'adadad';
+    if (theme === 'dark') div_color = 'ffffff30';
+    if (theme === 'dark') border_color = 'ffffff30';
+    if (theme === 'dark') progbar_bg = 'ffffff30';
+    if (theme === 'dark') progbar_color = '006fee';
     // Light
-    if (theme === 'light') bg_color = `fff`;
-    if (theme === 'light') title_color = `000`;
-    if (theme === 'light') sub_title_color = `000`;
-    if (theme === 'light') text_color = `000`;
-    if (theme === 'light') username_color = `000`;
-    if (theme === 'light') id_color = `adadad`;
-    if (theme === 'light') div_color = `00000030`;
-    if (theme === 'light') border_color = `00000030`;
-    if (theme === 'light') progbar_bg = `00000050`;
-    if (theme === 'light') progbar_color = `60a5fa`;
+    if (theme === 'light') bg_color = 'fff';
+    if (theme === 'light') title_color = '000';
+    if (theme === 'light') sub_title_color = '000';
+    if (theme === 'light') text_color = '000';
+    if (theme === 'light') username_color = '000';
+    if (theme === 'light') id_color = 'adadad';
+    if (theme === 'light') div_color = '00000030';
+    if (theme === 'light') border_color = '00000030';
+    if (theme === 'light') progbar_bg = '00000050';
+    if (theme === 'light') progbar_color = '60a5fa';
 
     // Canvas
     const width = 705;
@@ -362,13 +380,13 @@ async function createFullCanvas(
         ctx.fillText(playedCount, 215, 324);
         ctx.fillStyle = `#${text_color}`;
         ctx.font = '14px Geist';
-        ctx.fillText(`/`, (ctx.measureText(playedCount).width + 215) + 5, 324);
+        ctx.fillText('/', (ctx.measureText(playedCount).width + 215) + 5, 324);
         ctx.fillStyle = `#${progbar_color}`;
         ctx.font = '700 14px Geist';
         ctx.fillText(gameCount, (ctx.measureText(playedCount).width + 215) + 15, 324);
         ctx.fillStyle = `#${text_color}`;
         ctx.font = '14px Geist';
-        ctx.fillText(`games played`, (ctx.measureText(playedCount).width + ctx.measureText(gameCount).width) + 215 + 20, 324);
+        ctx.fillText('games played', (ctx.measureText(playedCount).width + ctx.measureText(gameCount).width) + 215 + 20, 324);
         ctx.font = '700 14px Geist';
         ctx.fillText(`${progressPercent}%`, 405, 324);
     }
@@ -415,64 +433,6 @@ async function createFullCanvas(
     const borderRadius = 6;
     await createRoundedProgressBar(barwidth, barheight, progress, barColor, backgroundColor, borderRadius);
 
-    // Exp progress bar
-    // const playedCountt = gameData.playCount.playedCount.toString();
-    // const gameCountt = gameData.totals.totalGames.toString();
-    // ctx.fillStyle = '#60a5fa';
-    // ctx.font = 'bold 14px Ubuntu';
-    // ctx.fillText(playedCountt, 470, 324);
-    // ctx.fillStyle = 'white';
-    // ctx.font = 'bold 14px Ubuntu';
-    // ctx.fillText(`/`, (ctx.measureText(playedCountt).width + 470) + 5, 324);
-    // ctx.fillStyle = '#60a5fa';
-    // ctx.font = 'bold 14px Ubuntu';
-    // ctx.fillText(gameCountt, (ctx.measureText(playedCountt).width + 470) + 15, 324);
-    // ctx.fillStyle = 'white';
-    // ctx.font = 'bold 14px Ubuntu';
-    // ctx.fillText(`games played`, (ctx.measureText(playedCountt).width + ctx.measureText(gameCountt).width) + 470 + 20, 324);
-    // ctx.fillText(`${((parseInt(playedCountt) / parseInt(gameCountt)) * 100).toFixed(0)}%`, 630, 324);
-
-    // function createRoundedProgressBarr(barwidth, barheight, progress, barColor, backgroundColor, borderRadius) {
-    //     ctx.fillStyle = backgroundColor;
-    //     roundRect(ctx, 470, 330, barwidth, barheight, borderRadius, true, false);
-    //     const barWidth = Math.floor(barwidth * (progress / 100));
-    //     ctx.fillStyle = barColor;
-    //     roundRect(ctx, 470, 330, barWidth, barheight, borderRadius, true, true);
-    // }
-
-    // function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
-    //     if (typeof stroke === 'undefined') {
-    //         stroke = true;
-    //     }
-    //     if (typeof radius === 'undefined') {
-    //         radius = 5;
-    //     }
-    //     ctx.beginPath();
-    //     ctx.moveTo(x + radius, y);
-    //     ctx.lineTo(x + width - radius, y);
-    //     ctx.arcTo(x + width, y, x + width, y + radius, radius);
-    //     ctx.lineTo(x + width, y + height - radius);
-    //     ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
-    //     ctx.lineTo(x + radius, y + height);
-    //     ctx.arcTo(x, y + height, x, y + height - radius, radius);
-    //     ctx.lineTo(x, y + radius);
-    //     ctx.arcTo(x, y, x + radius, y, radius);
-    //     ctx.closePath();
-    //     if (stroke) {
-    //         ctx.stroke();
-    //     }
-    //     if (fill) {
-    //         ctx.fill();
-    //     }
-    // }
-    // const barwidthh = 220;
-    // const barheightt = 12;
-    // const progresss = (parseInt(playedCountt) / parseInt(gameCountt)) * 100;
-    // const barColorr = '#006fee';
-    // const backgroundColorr = '#313131';
-    // const borderRadiuss = 6;
-    // createRoundedProgressBarr(barwidthh, barheightt, progresss, barColorr, backgroundColorr, borderRadiuss);
-
     // Avatar
     async function drawCenteredRoundedImage() {
         const avatar = await loadImage(userData.avatar);
@@ -508,309 +468,3 @@ async function createFullCanvas(
     const buffer = canvas.toBuffer('image/png');
     return buffer;
 }
-
-
-
-
-
-
-
-
-
-
-// async function createFullCanvasOld(userData, gameData) {
-//     // Canvas
-//     const width = 385;
-//     const height = 503;
-//     const canvas = createCanvas(width, height);
-//     const ctx = canvas.getContext('2d');
-//     GlobalFonts.registerFromPath(path.join(process.cwd(), 'public', 'Ubuntu-Bold.ttf'), 'Ubuntu');
-
-//     // Opaque rectangle
-//     const cornerRadius = 0;
-//     ctx.fillStyle = '#0b0b0b';
-//     ctx.beginPath();
-//     ctx.moveTo(0 + cornerRadius, 0);
-//     ctx.lineTo(canvas.width - 0 - cornerRadius, 0);
-//     ctx.arcTo(canvas.width - 0, 0, canvas.width - 0, 0 + cornerRadius, cornerRadius);
-//     ctx.lineTo(canvas.width - 0, canvas.height - 0 - cornerRadius);
-//     ctx.arcTo(canvas.width - 0, canvas.height - 0, canvas.width - 0 - cornerRadius, canvas.height - 0, cornerRadius);
-//     ctx.lineTo(0 + cornerRadius, canvas.height - 0);
-//     ctx.arcTo(0, canvas.height - 0, 0, canvas.height - 0 - cornerRadius, cornerRadius);
-//     ctx.lineTo(0, 0 + cornerRadius);
-//     ctx.arcTo(0, 0, 0 + cornerRadius, 0, cornerRadius);
-//     ctx.closePath();
-//     ctx.fill();
-
-//     // Username
-//     async function drawCenteredText() {
-//         ctx.fillStyle = 'white';
-//         ctx.font = 'bold 26px Ubuntu';
-//         const username = userData.profile.personaname
-//         const textWidth = ctx.measureText(username).width;
-//         ctx.fillText(username, (canvas.width - textWidth) / 2, 160);
-//     }
-//     await drawCenteredText();
-
-//     // User details
-//     if (userData.profile.loccountrycode) {
-//         const countryImage = await loadImage(`https://flagsapi.com/${userData.profile.loccountrycode}/flat/24.png`);
-//         ctx.drawImage(countryImage, 70, 184);
-//         ctx.fillStyle = 'white';
-//         ctx.font = '18px Ubuntu';
-//         ctx.fillText(userData.profile.loccountrycode, 100, 203);
-//     } else {
-//         const countryImage = await loadImage(`https://flagsapi.com/US/flat/24.png`);
-//         ctx.drawImage(countryImage, 70, 184);
-//         ctx.fillStyle = 'white';
-//         ctx.font = '18px Ubuntu';
-//         ctx.fillText('US', 100, 203);
-//     }
-
-//     ctx.font = '12px Ubuntu';
-//     ctx.fillText('•', 135, 201);
-
-//     ctx.font = '18px Ubuntu';
-//     ctx.fillText(getRelativeTimeImprecise(userData.profile.timecreated), 150, 203);
-
-//     ctx.font = '12px Ubuntu';
-//     ctx.fillText('•', 235, 201);
-
-//     ctx.font = '18px Ubuntu';
-//     ctx.fillText(`Level ${userData.level}`, 250, 203);
-
-//     // Account details
-//     ctx.fillStyle = '#f87171';
-//     ctx.font = 'bold 26px Ubuntu';
-//     ctx.fillText(`$${gameData.totals.totalFinalFormatted}`, 50, 285);
-//     ctx.fillStyle = 'white';
-//     ctx.font = 'bold 12px Ubuntu';
-//     ctx.fillText(`Current Price`, 50, 260);
-
-//     ctx.fillStyle = '#4ade80';
-//     ctx.font = 'bold 26px Ubuntu';
-//     ctx.fillText(`$${gameData.totals.totalInitialFormatted}`, 227, 285);
-//     ctx.fillStyle = 'white';
-//     ctx.font = 'bold 12px Ubuntu';
-//     ctx.fillText(`Initial Price`, 227, 260);
-
-//     const playedCount = gameData.playCount.playedCount.toString();
-//     const gameCount = gameData.playCount.gameCount.toString();
-//     ctx.fillStyle = '#f5a524';
-//     ctx.font = 'bold 14px Ubuntu';
-//     ctx.fillText(playedCount, 50, 343);
-//     ctx.fillStyle = 'white';
-//     ctx.font = 'bold 14px Ubuntu';
-//     ctx.fillText(`/`, (ctx.measureText(playedCount).width + 50) + 5, 343);
-//     ctx.fillStyle = '#f5a524';
-//     ctx.font = 'bold 14px Ubuntu';
-//     ctx.fillText(gameCount, (ctx.measureText(playedCount).width + 50) + 15, 343);
-//     ctx.fillStyle = 'white';
-//     ctx.font = 'bold 14px Ubuntu';
-//     ctx.fillText(`games played`, (ctx.measureText(playedCount).width + ctx.measureText(gameCount).width) + 50 + 20, 343);
-//     ctx.fillText(`${((parseInt(playedCount) / parseInt(gameCount)) * 100).toFixed(0)}%`, 310, 343);
-
-//     function createRoundedProgressBar(barwidth, barheight, progress, barColor, backgroundColor, borderRadius) {
-//         ctx.fillStyle = backgroundColor;
-//         roundRect(ctx, 50, 350, barwidth, barheight, borderRadius, true, false);
-//         const barWidth = Math.floor(barwidth * (progress / 100));
-//         ctx.fillStyle = barColor;
-//         roundRect(ctx, 50, 350, barWidth, barheight, borderRadius, true, true);
-//     }
-
-//     function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
-//         if (typeof stroke === 'undefined') {
-//             stroke = true;
-//         }
-//         if (typeof radius === 'undefined') {
-//             radius = 5;
-//         }
-//         ctx.beginPath();
-//         ctx.moveTo(x + radius, y);
-//         ctx.lineTo(x + width - radius, y);
-//         ctx.arcTo(x + width, y, x + width, y + radius, radius);
-//         ctx.lineTo(x + width, y + height - radius);
-//         ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
-//         ctx.lineTo(x + radius, y + height);
-//         ctx.arcTo(x, y + height, x, y + height - radius, radius);
-//         ctx.lineTo(x, y + radius);
-//         ctx.arcTo(x, y, x + radius, y, radius);
-//         ctx.closePath();
-//         if (stroke) {
-//             ctx.stroke();
-//         }
-//         if (fill) {
-//             ctx.fill();
-//         }
-//     }
-//     const barwidth = 293;
-//     const barheight = 12;
-//     const progress = (parseInt(playedCount) / parseInt(gameCount)) * 100;
-//     const barColor = '#f5a524';
-//     const backgroundColor = '#313131';
-//     const borderRadius = 6;
-//     createRoundedProgressBar(barwidth, barheight, progress, barColor, backgroundColor, borderRadius);
-
-//     // Other stats
-//     ctx.fillStyle = 'white';
-//     ctx.font = 'bold 16px Ubuntu';
-//     ctx.fillText(`Avg. Game Price`, 50, 420);
-//     ctx.fillStyle = '#f5a524';
-//     ctx.font = 'bold 24px Ubuntu';
-//     ctx.fillText(`$${gameData.totals.averageGamePrice}`, 50, 446);
-
-//     ctx.fillStyle = 'white';
-//     ctx.font = 'bold 16px Ubuntu';
-//     ctx.fillText(`Total Playtime`, 230, 420);
-//     ctx.fillStyle = '#f5a524';
-//     ctx.font = 'bold 24px Ubuntu';
-//     ctx.fillText(`${gameData.totals.totalPlaytimeHours}h`, 230, 446);
-
-//     // Watermark
-//     const watermarkText = 'https://steeeam.vercel.app';
-//     ctx.fillStyle = 'grey';
-//     ctx.font = '10px Ubuntu';
-//     ctx.fillText(watermarkText, (canvas.width - ctx.measureText(watermarkText).width) - 5, canvas.height - 5);
-
-//     // User avatar
-//     async function drawCenteredRoundedImage() {
-//         const avatar = await loadImage(userData.profile.avatarfull);
-//         const desiredWidth = 100;
-//         const desiredHeight = 100;
-//         const scaleFactor = Math.min(desiredWidth / avatar.width, desiredHeight / avatar.height);
-//         const newWidth = avatar.width * scaleFactor;
-//         const newHeight = avatar.height * scaleFactor;
-//         const x = (canvas.width - newWidth) / 2;
-//         ctx.save();
-//         ctx.beginPath();
-//         const cornerRadius = 10;
-//         const y = 20;
-//         ctx.moveTo(x + cornerRadius, y);
-//         ctx.arcTo(x + newWidth, y, x + newWidth, y + newHeight, cornerRadius);
-//         ctx.arcTo(x + newWidth, y + newHeight, x, y + newHeight, cornerRadius);
-//         ctx.arcTo(x, y + newHeight, x, y, cornerRadius);
-//         ctx.arcTo(x, y, x + newWidth, y, cornerRadius);
-//         ctx.closePath();
-//         ctx.clip();
-//         ctx.drawImage(avatar, x, y, newWidth, newHeight);
-//         ctx.restore();
-//     }
-//     await drawCenteredRoundedImage();
-
-//     const buffer = canvas.toBuffer('image/png');
-//     return buffer;
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-// async function createPartialCanvas(userData) {
-//     // Canvas
-//     const width = 385;
-//     const height = 503;
-//     const canvas = createCanvas(width, height);
-//     const ctx = canvas.getContext('2d');
-//     GlobalFonts.registerFromPath(path.join(process.cwd(), 'public', 'Ubuntu-Bold.ttf'), 'Ubuntu');
-
-//     // Opaque rectangle
-//     const cornerRadius = 0;
-//     ctx.fillStyle = '#0b0b0b';
-//     ctx.beginPath();
-//     ctx.moveTo(0 + cornerRadius, 0);
-//     ctx.lineTo(canvas.width - 0 - cornerRadius, 0);
-//     ctx.arcTo(canvas.width - 0, 0, canvas.width - 0, 0 + cornerRadius, cornerRadius);
-//     ctx.lineTo(canvas.width - 0, canvas.height - 0 - cornerRadius);
-//     ctx.arcTo(canvas.width - 0, canvas.height - 0, canvas.width - 0 - cornerRadius, canvas.height - 0, cornerRadius);
-//     ctx.lineTo(0 + cornerRadius, canvas.height - 0);
-//     ctx.arcTo(0, canvas.height - 0, 0, canvas.height - 0 - cornerRadius, cornerRadius);
-//     ctx.lineTo(0, 0 + cornerRadius);
-//     ctx.arcTo(0, 0, 0 + cornerRadius, 0, cornerRadius);
-//     ctx.closePath();
-//     ctx.fill();
-
-//     // Username
-//     async function drawCenteredText() {
-//         ctx.fillStyle = 'white';
-//         ctx.font = 'bold 26px Ubuntu';
-//         const username = userData.profile.personaname
-//         const textWidth = ctx.measureText(username).width;
-//         ctx.fillText(username, (canvas.width - textWidth) / 2, 160);
-//     }
-//     await drawCenteredText();
-
-//     // User details
-//     if (userData.profile.loccountrycode) {
-//         const countryImage = await loadImage(`https://flagsapi.com/${userData.profile.loccountrycode}/flat/24.png`);
-//         ctx.drawImage(countryImage, 70, 184);
-//         ctx.fillStyle = 'white';
-//         ctx.font = '18px Ubuntu';
-//         ctx.fillText(userData.profile.loccountrycode, 100, 203);
-//     } else {
-//         const countryImage = await loadImage(`https://flagsapi.com/US/flat/24.png`);
-//         ctx.drawImage(countryImage, 70, 184);
-//         ctx.fillStyle = 'white';
-//         ctx.font = '18px Ubuntu';
-//         ctx.fillText('US', 100, 203);
-//     }
-
-//     ctx.font = '12px Ubuntu';
-//     ctx.fillText('•', 135, 201);
-
-//     ctx.font = '18px Ubuntu';
-//     ctx.fillText(getRelativeTimeImprecise(userData.profile.timecreated), 150, 203);
-
-//     ctx.font = '12px Ubuntu';
-//     ctx.fillText('•', 235, 201);
-
-//     ctx.font = '18px Ubuntu';
-//     ctx.fillText(`Level ${userData.level}`, 250, 203);
-
-//     // Private
-//     const privateText = 'Private games list';
-//     ctx.fillStyle = '#d54e4e';
-//     ctx.font = '24px Ubuntu';
-//     ctx.fillText(privateText, (canvas.width - ctx.measureText(privateText).width) / 2, canvas.height / 1.5);
-
-//     // Watermark
-//     const watermarkText = 'https://steeeam.vercel.app';
-//     ctx.fillStyle = 'grey';
-//     ctx.font = '10px Ubuntu';
-//     ctx.fillText(watermarkText, (canvas.width - ctx.measureText(watermarkText).width) - 5, canvas.height - 5);
-
-//     // User avatar
-//     async function drawCenteredRoundedImage() {
-//         const avatar = await loadImage(userData.profile.avatarfull);
-//         const desiredWidth = 100;
-//         const desiredHeight = 100;
-//         const scaleFactor = Math.min(desiredWidth / avatar.width, desiredHeight / avatar.height);
-//         const newWidth = avatar.width * scaleFactor;
-//         const newHeight = avatar.height * scaleFactor;
-//         const x = (canvas.width - newWidth) / 2;
-//         ctx.save();
-//         ctx.beginPath();
-//         const cornerRadius = 10;
-//         const y = 20;
-//         ctx.moveTo(x + cornerRadius, y);
-//         ctx.arcTo(x + newWidth, y, x + newWidth, y + newHeight, cornerRadius);
-//         ctx.arcTo(x + newWidth, y + newHeight, x, y + newHeight, cornerRadius);
-//         ctx.arcTo(x, y + newHeight, x, y, cornerRadius);
-//         ctx.arcTo(x, y, x + newWidth, y, cornerRadius);
-//         ctx.closePath();
-//         ctx.clip();
-//         ctx.drawImage(avatar, x, y, newWidth, newHeight);
-//         ctx.restore();
-//     }
-//     await drawCenteredRoundedImage();
-
-//     const buffer = canvas.toBuffer('image/png');
-//     return buffer;
-// }

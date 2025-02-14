@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Divider } from '@nextui-org/react';
+import { Divider } from '@heroui/react';
 import { FaImage } from 'react-icons/fa';
-import { Accordion, AccordionItem } from '@nextui-org/react';
+import { Accordion, AccordionItem } from '@heroui/react';
+import Image from 'next/image';
 
 export default function ShareableImage() {
     const router = useRouter();
@@ -43,7 +44,13 @@ export default function ShareableImage() {
 
                     <div className='w-full lg:max-w-[50%]'>
                         <Link href={`https://steeeam.vercel.app/api/${uid}`} target='_blank'>
-                            <img src={`https://steeeam.vercel.app/api/${uid}`} />
+                            <Image
+                                src={`https://steeeam.vercel.app/api/${uid}`}
+                                width={501}
+                                height={273}
+                                alt='Shareable Image'
+                                className='rounded-md'
+                            />
                         </Link>
                     </div>
 
@@ -71,5 +78,5 @@ export default function ShareableImage() {
                 </div>
             </div>
         </React.Fragment>
-    )
+    );
 }

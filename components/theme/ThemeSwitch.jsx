@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useTheme } from "next-themes";
-import { LuMoonStar } from "react-icons/lu";
-import { LuSun } from "react-icons/lu";
-import { HiMiniComputerDesktop } from "react-icons/hi2";
+import { useTheme } from 'next-themes';
+import { LuMoonStar } from 'react-icons/lu';
+import { LuSun } from 'react-icons/lu';
 
 export default function ThemeSwitch() {
     const { theme, setTheme } = useTheme();
@@ -11,10 +10,8 @@ export default function ThemeSwitch() {
     const handleClick = (mode) => {
         if (mode === 'dark') {
             setTheme('dark');
-        } else if (mode === 'light') {
-            setTheme('light');
         } else {
-            setTheme('system');
+            setTheme('light');
         }
     };
 
@@ -33,10 +30,7 @@ export default function ThemeSwitch() {
                 <div className={`${theme === 'light' && 'bg-btn-active'} p-2 rounded-full cursor-pointer group`} onClick={() => handleClick('light')}>
                     <LuSun fontSize={18} className={`${theme === 'light' ? 'text-link-hover' : 'text-link'} group-hover:text-link-hover`} />
                 </div>
-                <div className={`${theme === 'system' && 'bg-btn-active'} p-2 rounded-full cursor-pointer group`} onClick={() => handleClick('system')}>
-                    <HiMiniComputerDesktop fontSize={18} className={`${theme === 'system' ? 'text-link-hover' : 'text-link'} group-hover:text-link-hover`} />
-                </div>
             </div>
         </React.Fragment>
-    )
+    );
 }

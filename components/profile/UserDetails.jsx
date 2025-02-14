@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import React from 'react';
-import { Button } from '@nextui-org/react';
-import { useDisclosure } from '@nextui-org/react';
+import { Button } from '@heroui/react';
+import { useDisclosure } from '@heroui/react';
 import IdModal from './IdModal';
 
 export default function UserDetails({ userSummary }) {
@@ -49,5 +49,5 @@ export default function UserDetails({ userSummary }) {
 
             <IdModal isOpen={isOpen} onOpenChange={onOpenChange} userSummary={userSummary} />
         </React.Fragment>
-    )
+    );
 }

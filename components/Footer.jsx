@@ -13,5 +13,5 @@ export default function Footer() {
                 <ThemeSwitch />
             </div>
         </React.Fragment>
-    )
+    );
 }

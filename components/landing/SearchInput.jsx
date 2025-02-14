@@ -1,18 +1,23 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Input, Button } from '@nextui-org/react';
-import { FaArrowRight } from "react-icons/fa";
+import { Input, Button } from '@heroui/react';
+import { FaArrowRight } from 'react-icons/fa';
 import { RiSearchLine } from 'react-icons/ri';
 import { formatSteamProfileUrl } from '@/utils/utils';
 import CurrencySelect from './CurrencySelect';
+import { UserDataContext } from '../UserDataContext';
+import { toast } from 'react-toastify';
 
 export default function SearchInput() {
     const router = useRouter();
+    const { isLoading, setIsLoading } = useContext(UserDataContext);
     const [inputValue, setInputValue] = useState('');
     const [countryCode, setCountryCode] = useState(null);
     const [countryAbbr, setCountryAbbr] = useState(null);
 
     const handleSubmit = async () => {
+        setIsLoading(true);
+        toast.loading('Fetching data...');
         if (inputValue.length > 0) {
             const formatInput = formatSteamProfileUrl(inputValue);
             if (countryCode) {
@@ -48,14 +53,14 @@ export default function SearchInput() {
                 value={inputValue}
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
-                className=''
+                isDisabled={isLoading}
                 endContent={
                     <Button
                         size='sm'
                         isIconOnly
                         isDisabled={!inputValue > 0}
                         startContent={<FaArrowRight />}
-                        onClick={handleSubmit}
+                        onPress={handleSubmit}
                         className='bg-pop text-white dark:text-black ml-[20px]'
                     />
                 }
@@ -76,5 +81,5 @@ export default function SearchInput() {
 
             <CurrencySelect setCountryCode={setCountryCode} setCountryAbbr={setCountryAbbr} />
         </div>
-    )
+    );
 }

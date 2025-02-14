@@ -13,7 +13,7 @@ export default function Sidebar({ steamId, userSummary }) {
                 <Navigation />
                 <Avatar userSummary={userSummary} />
                 <UserDetails userSummary={userSummary} />
-                <UserConnection steamId={userSummary.steamId} userSummary={userSummary} />
+                <UserConnection userSummary={userSummary} />
                 <UserLocation userSummary={userSummary} />
 
                 <div className='flex justify-center w-full mt-3 lg:block'>
@@ -21,5 +21,5 @@ export default function Sidebar({ steamId, userSummary }) {
                 </div>
             </div>
         </React.Fragment>
-    )
+    );
 }

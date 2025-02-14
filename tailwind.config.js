@@ -1,14 +1,14 @@
-import { nextui } from "@nextui-org/react";
+import { heroui } from "@heroui/react";
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     content: [
         './pages/**/*.{js,ts,jsx,tsx,mdx}',
         './components/**/*.{js,ts,jsx,tsx,mdx}',
-        './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}'
+        './node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}'
     ],
     darkMode: 'class',
-    plugins: [nextui({
+    plugins: [heroui({
         themes: {
             light: {
                 colors: {
@@ -23,6 +23,10 @@ module.exports = {
                     'btn-active': '#f3f3f3',
                     'link': '#666',
                     'link-hover': '#000',
+                    secondary: {
+                        DEFAULT: '#0a0a0a',
+                        foreground: '#fff'
+                    },
                 }
             },
             dark: {
@@ -38,6 +42,10 @@ module.exports = {
                     'btn-active': '#1f1f1f',
                     'link': '#888',
                     'link-hover': '#fff',
+                    secondary: {
+                        DEFAULT: '#ebebeb',
+                        foreground: '#000'
+                    },
                 }
             },
         }

@@ -1,23 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Divider, Spinner } from '@nextui-org/react';
-import { FaCheck } from "react-icons/fa6";
-import { FaX } from "react-icons/fa6";
+import React, { useContext } from 'react';
+import { Divider, Spinner } from '@heroui/react';
+import { FaCheck } from 'react-icons/fa6';
+import { FaX } from 'react-icons/fa6';
+import { UserDataContext } from '../UserDataContext';
 
-export default function UserBans({ steamId }) {
-    const [userBans, setUserBans] = useState(null);
-
-    useEffect(() => {
-        if (!steamId) return;
-        async function fetchUserBans() {
-            const userBansResponse = await fetch(`/api/route`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ route: 'user-bans', steamId: steamId }),
-            }).then(res => res.json());
-            setUserBans(userBansResponse);
-        }
-        fetchUserBans();
-    }, [steamId]);
+export default function UserBans() {
+    const { userBans } = useContext(UserDataContext);
 
     return (
         <React.Fragment>
@@ -92,5 +80,5 @@ export default function UserBans({ steamId }) {
                 </div>
             </div>
         </React.Fragment>
-    )
+    );
 }

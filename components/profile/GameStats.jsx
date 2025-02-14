@@ -1,5 +1,5 @@
 import React from 'react';
-import { Skeleton, Tooltip } from '@nextui-org/react';
+import { Skeleton, Tooltip } from '@heroui/react';
 import { pricePerHour } from '@/utils/utils';
 
 export default function GameStats({ totals, countryAbbr }) {
@@ -24,13 +24,13 @@ export default function GameStats({ totals, countryAbbr }) {
                     <Skeleton className='w-[150px] h-[18px] rounded-full' />
                 </div>
             </div>
-        )
+        );
     }
 
     return (
         <React.Fragment>
             <div className='grid grid-cols-2 gap-x-4 gap-y-4 w-full md:grid-cols-5 lg:w-auto lg:gap-x-7'>
-                <Tooltip closeDelay={0} className='bg-tooltip' content={`All free and paid games in the user's library`}>
+                <Tooltip closeDelay={0} className='bg-tooltip' content='All free and paid games in the user&apos;s library'>
                     <div className='flex items-center flex-col lg:items-start'>
                         <p className='text-md text-dull font-medium sm:text-lg'>
                             Total Games
@@ -41,7 +41,7 @@ export default function GameStats({ totals, countryAbbr }) {
                     </div>
                 </Tooltip>
 
-                <Tooltip closeDelay={0} className='bg-tooltip' content={`The average prices of all paid games in the user's library`}>
+                <Tooltip closeDelay={0} className='bg-tooltip' content='The average prices of all paid games in the user&apos;s library'>
                     <div className='flex items-center flex-col lg:items-start'>
                         <p className='text-md text-dull font-medium sm:text-lg'>
                             Avg. Price
@@ -52,7 +52,7 @@ export default function GameStats({ totals, countryAbbr }) {
                     </div>
                 </Tooltip>
 
-                <Tooltip closeDelay={0} className='bg-tooltip' content={`The amount of money spent on games per hour of gameplay`}>
+                <Tooltip closeDelay={0} className='bg-tooltip' content='The amount of money spent on games per hour of gameplay'>
                     <div className='flex items-center flex-col lg:items-start'>
                         <p className='text-md text-dull font-medium sm:text-lg'>
                             Price Per Hour
@@ -63,7 +63,7 @@ export default function GameStats({ totals, countryAbbr }) {
                     </div>
                 </Tooltip>
 
-                <Tooltip closeDelay={0} className='bg-tooltip' content={`The average playtime across all games in the user's library`}>
+                <Tooltip closeDelay={0} className='bg-tooltip' content='The average playtime across all games in the user&apos;s library'>
                     <div className='flex items-center flex-col lg:items-start'>
                         <p className='text-md text-dull font-medium sm:text-lg'>
                             Avg. Playtime
@@ -74,7 +74,7 @@ export default function GameStats({ totals, countryAbbr }) {
                     </div>
                 </Tooltip>
 
-                <Tooltip closeDelay={0} className='bg-tooltip' content={`Total playtime across all games`}>
+                <Tooltip closeDelay={0} className='bg-tooltip' content='Total playtime across all games'>
                     <div className='flex items-center flex-col lg:items-start'>
                         <p className='text-md text-dull font-medium sm:text-lg'>
                             Total Playtime
@@ -86,5 +86,5 @@ export default function GameStats({ totals, countryAbbr }) {
                 </Tooltip>
             </div>
         </React.Fragment>
-    )
+    );
 }

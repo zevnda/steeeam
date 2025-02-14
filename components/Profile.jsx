@@ -1,45 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Loader from './Loader';
 import ProfileSummary from './profile/ProfileSummary';
-import Error from './Error';
 import Sidebar from './profile/Sidebar';
-import { Divider } from '@nextui-org/react';
+import { Divider } from '@heroui/react';
 import Footer from './Footer';
+import { UserDataContext } from './UserDataContext';
 
-export default function Profile({ uid }) {
+export default function Profile() {
     const router = useRouter();
+    const { userSummary } = useContext(UserDataContext);
     const countryCode = router.query.cc;
     const countryAbbr = router.query.abbr;
-    const [isLoading, setIsLoading] = useState(false);
-    const [userSummary, setUserSummary] = useState(null);
-    const [error, setError] = useState(null);
 
-    useEffect(() => {
-        if (!uid) return;
-        setIsLoading(true);
-        async function fetchUserSummary() {
-            const userSummaryResponse = await fetch(`/api/route`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ route: 'user-summary', uid: uid }),
-            }).then(res => res.json());
-            if (userSummaryResponse.error) return setError(userSummaryResponse.error);
-            setUserSummary(userSummaryResponse);
-            setIsLoading(false);
-        }
-        fetchUserSummary();
-    }, [uid]);
-
-    if (error) return <Error error={error} setError={setError} />;
-
-    if (!uid || !userSummary) return <Loader />;
+    if (!userSummary) return <Loader />;
 
     return (
         <React.Fragment>
             <Head>
-                <title>{userSummary.personaName} - Steeeam</title>
+                <title>{`${userSummary.personaName} - Steeeam`}</title>
             </Head>
 
             <div className='bg-base'>
@@ -49,7 +29,7 @@ export default function Profile({ uid }) {
 
                         <div className='relative w-full h-full min-h-screen lg:pl-[250px]'>
                             <Divider className='mt-5 mb-7 bg-light-border lg:m-0 lg:absolute lg:top-0 lg:left-[230px] lg:w-[1px] lg:h-full' />
-                            <ProfileSummary steamId={userSummary.steamId} countryCode={countryCode} countryAbbr={countryAbbr} isLoading={isLoading} />
+                            <ProfileSummary steamId={userSummary.steamId} countryCode={countryCode} countryAbbr={countryAbbr} />
                         </div>
                     </div>
                 </div>
@@ -57,5 +37,5 @@ export default function Profile({ uid }) {
 
             <Footer />
         </React.Fragment>
-    )
+    );
 }

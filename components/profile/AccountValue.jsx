@@ -1,6 +1,6 @@
 import React from 'react';
-import { Divider, Skeleton, Tooltip } from '@nextui-org/react';
-import { PiGraphBold } from "react-icons/pi";
+import { Divider, Skeleton, Tooltip } from '@heroui/react';
+import { PiGraphBold } from 'react-icons/pi';
 
 export default function AccountValue({ totals }) {
     return (
@@ -25,7 +25,7 @@ export default function AccountValue({ totals }) {
                                     <p className='text-md text-dull font-medium sm:text-lg'>
                                         Current Price
                                     </p>
-                                    <Skeleton isLoaded={totals} className="rounded-full">
+                                    <Skeleton isLoaded={totals} className='rounded-full'>
                                         <p className='text-2xl font-bold text-red-400 md:text-3xl'>
                                             {totals ? (totals.totalFinalFormatted) : ('$0,000.00')}
                                         </p>
@@ -37,7 +37,7 @@ export default function AccountValue({ totals }) {
                                     <p className='text-md text-dull font-medium sm:text-lg'>
                                         Initial Price
                                     </p>
-                                    <Skeleton isLoaded={totals} className="rounded-full">
+                                    <Skeleton isLoaded={totals} className='rounded-full'>
                                         <p className='text-2xl font-bold text-green-400 md:text-3xl'>
                                             {totals ? (totals.totalInitialFormatted) : ('$0,000.00')}
                                         </p>
@@ -49,5 +49,5 @@ export default function AccountValue({ totals }) {
                 </div>
             </div>
         </React.Fragment>
-    )
+    );
 }

@@ -1,10 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
-import { Progress, Skeleton } from '@nextui-org/react';
+import { Progress, Skeleton } from '@heroui/react';
 
-export default function GameProgressBar({ steamId, playCount, gameData, totals }) {
+export default function GameProgressBar({ steamId, playCount, totals }) {
 
-    if (!playCount || !gameData) {
+    if (!playCount) {
         return (
             <div className='w-full flex-grow lg:w-fit'>
                 <div className='flex flex-col gap-2'>
@@ -13,7 +13,7 @@ export default function GameProgressBar({ steamId, playCount, gameData, totals }
                     <Skeleton className='w-[120px] h-[16px] rounded-full' />
                 </div>
             </div>
-        )
+        );
     }
 
     return (
@@ -42,5 +42,5 @@ export default function GameProgressBar({ steamId, playCount, gameData, totals }
                 </Link>
             </div>
         </React.Fragment >
-    )
+    );
 }

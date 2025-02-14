@@ -1,24 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import Link from 'next/link';
-import { Divider, Skeleton } from '@nextui-org/react';
+import { Divider, Skeleton } from '@heroui/react';
 import { HiMiniUserGroup } from 'react-icons/hi2';
-import { RiBuilding4Fill } from "react-icons/ri";
+import { RiBuilding4Fill } from 'react-icons/ri';
+import { UserDataContext } from '../UserDataContext';
 
-export default function UserConnection({ steamId, userSummary }) {
-    const [userConnections, setUserConnections] = useState(null);
-
-    useEffect(() => {
-        if (!steamId) return;
-        async function fetchUserFriends() {
-            const userConnectionsResponse = await fetch(`/api/route`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ route: 'user-connections', steamId: steamId }),
-            }).then(res => res.json());
-            setUserConnections(userConnectionsResponse);
-        }
-        fetchUserFriends();
-    }, [steamId]);
+export default function UserConnection({ userSummary }) {
+    const { userConnections } = useContext(UserDataContext);
 
     if (!userConnections) return <Skeleton className='w-full h-[18px] rounded-full mt-2' />;
 
@@ -46,5 +34,5 @@ export default function UserConnection({ steamId, userSummary }) {
                 </div>
             </div>
         </React.Fragment>
-    )
+    );
 }

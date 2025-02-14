@@ -1,21 +1,23 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { Button } from '@nextui-org/react';
-import { TiArrowBack } from "react-icons/ti";
+import { TiArrowBack } from 'react-icons/ti';
 import { useTheme } from 'next-themes';
 import localFont from 'next/font/local';
 
-const Engrain = localFont({ src: '../../public/Elgraine-Black-Italic.ttf' });
+const elgraine = localFont({ src: '../../public/Elgraine-Black-Italic.ttf' });
 
 export default function Navigation() {
-    const router = useRouter();
-    const { resolvedTheme } = useTheme();
+    const { theme } = useTheme();
+    const [logoSrc, setLogoSrc] = useState('');
 
-    const handleClick = () => {
-        router.push('/');
-    };
+    useEffect(() => {
+        setLogoSrc(
+            theme === 'dark'
+                ? '/logo-white.svg'
+                : '/logo-black.svg'
+        );
+    }, [theme]);
 
     return (
         <React.Fragment>
@@ -28,13 +30,13 @@ export default function Navigation() {
 
                 <div className='absolute flex justify-center items-center gap-1 w-full select-none flex-grow'>
                     <Link href={'/'} className='flex justify-center items-center gap-1'>
-                        <Image src={resolvedTheme === 'dark' ? '/logo-white.svg' : '/logo-black.svg'} width={30} height={30} alt='steeeam logo' />
-                        <p className={`${Engrain.className} text-lg text-black dark:text-white font-medium`}>
+                        {logoSrc && (<Image src={logoSrc} width={30} height={30} alt='steeeam logo' />)}
+                        <p className={`${elgraine.className} text-lg text-black dark:text-white font-medium`}>
                             Steeeam
                         </p>
                     </Link>
                 </div>
             </div>
         </React.Fragment>
-    )
+    );
 }

@@ -1,5 +1,6 @@
-import { ThemeProvider } from '@/components/theme/theme-provider'
-import { NextUIProvider } from '@nextui-org/react';
+import { ThemeProvider } from '@/components/theme/theme-provider';
+import { HeroUIProvider } from '@heroui/react';
+import { UserDataProvider } from '@/components/UserDataContext';
 import '../styles/globals.css';
 
 export default function MyApp({ Component, pageProps }) {
@@ -11,9 +12,11 @@ export default function MyApp({ Component, pageProps }) {
             defaultTheme='system'
             disableTransitionOnChange
         >
-            <NextUIProvider>
-                <Component {...pageProps} />
-            </NextUIProvider>
+            <HeroUIProvider>
+                <UserDataProvider>
+                    <Component {...pageProps} />
+                </UserDataProvider>
+            </HeroUIProvider>
         </ThemeProvider>
     );
 }

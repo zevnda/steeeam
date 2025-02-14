@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { Tooltip } from '@nextui-org/react';
+import { Tooltip } from '@heroui/react';
 
 export default function Avatar({ userSummary }) {
     return (
@@ -35,5 +35,5 @@ export default function Avatar({ userSummary }) {
                 </div>
             )}
         </React.Fragment>
-    )
+    );
 }

@@ -1,13 +1,12 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { RxCross2 } from "react-icons/rx";
+import { RxCross2 } from 'react-icons/rx';
 
-export default function Error({ error, setError }) {
+export default function Error({ error }) {
     const router = useRouter();
 
     const handleClick = () => {
         router.back('/');
-        setError(false);
     };
 
     return (
@@ -23,5 +22,5 @@ export default function Error({ error, setError }) {
                 </div>
             </div>
         </React.Fragment>
-    )
+    );
 }

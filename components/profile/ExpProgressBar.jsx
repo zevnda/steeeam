@@ -1,21 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Progress, Skeleton } from '@nextui-org/react';
+import React, { useContext } from 'react';
+import { Progress, Skeleton } from '@heroui/react';
+import { UserDataContext } from '../UserDataContext';
 
-export default function ExpProgressBar({ steamId }) {
-    const [userExp, setUserExp] = useState(null);
-
-    useEffect(() => {
-        if (!steamId) return;
-        async function fetchUserExp() {
-            const userExpResponse = await fetch(`/api/route`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ route: 'user-exp', steamId: steamId }),
-            }).then(res => res.json());
-            setUserExp(userExpResponse);
-        }
-        fetchUserExp();
-    }, [steamId]);
+export default function ExpProgressBar() {
+    const { userExp } = useContext(UserDataContext);
 
     if (!userExp) {
         return (
@@ -26,7 +14,7 @@ export default function ExpProgressBar({ steamId }) {
                     <Skeleton className='w-[120px] h-[16px] rounded-full' />
                 </div>
             </div>
-        )
+        );
     }
 
     return (
@@ -34,7 +22,7 @@ export default function ExpProgressBar({ steamId }) {
             <div className='w-full flex-grow lg:w-fit'>
                 <React.Fragment>
                     <Progress
-                        value={userExp.xpRemaining}
+                        value={userExp.requiredXP - userExp.xpRemaining}
                         maxValue={userExp.requiredXP}
                         color='primary'
                         formatOptions={{ style: 'percent' }}
@@ -43,7 +31,7 @@ export default function ExpProgressBar({ steamId }) {
                         label={
                             <React.Fragment>
                                 <p>
-                                    <span className='font-bold text-blue-400'>{userExp.xpRemaining}</span> / <span className='font-bold text-blue-400'>{userExp.requiredXP}</span> XP to next level
+                                    <span className='font-bold text-blue-400'>{userExp.xpRemaining}</span> XP to next level
                                 </p>
                             </React.Fragment>
                         }
@@ -54,5 +42,5 @@ export default function ExpProgressBar({ steamId }) {
                 </React.Fragment>
             </div>
         </React.Fragment >
-    )
+    );
 }

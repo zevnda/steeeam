@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/react';
 import { FaRegCopy } from 'react-icons/fa';
 
 export default function IdModal({ isOpen, onOpenChange, userSummary }) {
@@ -110,5 +110,5 @@ export default function IdModal({ isOpen, onOpenChange, userSummary }) {
                 </div>
             </Modal>
         </React.Fragment>
-    )
+    );
 }
