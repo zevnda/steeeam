@@ -1,31 +1,94 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useTheme } from 'next-themes';
 import { useRouter } from 'next/router';
 import { Divider } from '@heroui/react';
 import { FaImage, FaRegCopy } from 'react-icons/fa';
-import { Accordion, AccordionItem } from '@heroui/react';
 import Image from 'next/image';
+import { Slide, ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+const CodeWithSelection = ({ label, code }) => {
+    const { theme } = useTheme();
+
+    const getToastStyles = () => {
+        if (typeof window === 'undefined') return {};
+
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDarkMode = theme === 'system' ? prefersDark : theme === 'dark';
+
+        const background = isDarkMode ? '#0a0a0a' : '#f5f5f5';
+        const border = isDarkMode ? '1px solid #333' : '1px solid #ccc';
+        const color = isDarkMode ? '#fff' : '#000';
+
+        return { background, border, color, fontSize: 12 };
+    };
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const toastContainers = document.querySelectorAll('.Toastify__toast');
+        toastContainers.forEach(container => {
+            Object.assign(container.style, getToastStyles());
+        });
+    }, [theme]);
+
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(code);
+        toast.success('Copied to clipboard');
+    };
+
+    return (
+        <Fragment>
+            <div className='flex flex-col'>
+                <p className='font-semibold mb-1'>
+                    {label}
+                </p>
+                <div className='flex justify-between items-center gap-4 bg-[#f0f0f0] dark:bg-[#1c1c1c] p-1.5 rounded w-full lg:w-[70%] cursor-pointer' onClick={copyToClipboard}>
+                    <p className='text-xs font-mono w-[95%]'>
+                        {code}
+                    </p>
+                    <FaRegCopy className='text-md' />
+                </div>
+            </div>
+
+            <ToastContainer
+                toastStyle={getToastStyles()}
+                position='bottom-right'
+                theme={theme}
+                transition={Slide}
+                pauseOnHover
+                pauseOnFocusLoss={false}
+                limit={2}
+                newestOnTop
+                autoClose={2000}
+            />
+        </Fragment>
+    );
+};
 
 export default function ShareableImage() {
     const router = useRouter();
+    const { theme } = useTheme();
     const { uid } = router.query;
-    const [isCopied, setIsCopied] = useState(false);
 
-    const copyToClipboard = () => {
-        navigator.clipboard.writeText(`https://steeeam.vercel.app/api/${uid}`);
-        setIsCopied(true);
-        setTimeout(() => {
-            setIsCopied(false);
-        }, 2000);
-    };
+    const [imgSrc, setImgSrc] = useState(`https://steeeam.vercel.app/api/${uid}`);
+
+    useEffect(() => {
+        setImgSrc(
+            theme === 'dark'
+                ? `https://steeeam.vercel.app/api/${uid}`
+                : `https://steeeam.vercel.app/api/${uid}?theme=light`
+        );
+    }, [theme]);
 
     return (
         <Fragment>
             <div className='flex flex-col w-full mt-14'>
                 <div className='flex justify-between items-center'>
-                    <div className='flex items-center gap-1'>
+                    <div className='flex items-center gap-2'>
                         <FaImage fontSize={22} />
-                        <p className='text-lg font-medium py-2'>
+                        <p className='text-lg font-semibold py-2'>
                             Shareable Image
                         </p>
                     </div>
@@ -34,48 +97,44 @@ export default function ShareableImage() {
                 <Divider className='w-full h-[1px] bg-light-border mb-5 lg:mb-5' />
 
                 <div className='flex flex-col w-full gap-4'>
-                    <p>This is your dynamically generated image URL</p>
-
-                    <div className='flex items-center gap-2 bg-neutral-200 dark:bg-neutral-800 p-1.5 rounded-md max-w-fit cursor-pointer' onClick={copyToClipboard}>
-                        <p className='text-sm text-dull truncate'>
-                            https://steeeam.vercel.app/api/{uid}
-                        </p>
-                        <FaRegCopy fontSize={16} />
-                    </div>
-
-                    <div className='w-full lg:max-w-[50%]'>
+                    <div className='w-full lg:max-w-[70%]'>
                         <Link href={`https://steeeam.vercel.app/api/${uid}`} target='_blank'>
                             <Image
-                                src={`https://steeeam.vercel.app/api/${uid}`}
-                                width={501}
-                                height={273}
+                                src={imgSrc}
+                                width={705}
+                                height={385}
                                 alt='Shareable Image'
-                                className='rounded-md'
+                                className='rounded-md border border-light-border w-full'
                             />
                         </Link>
                     </div>
 
-                    <div className='w-full lg:max-w-[50%]'>
-                        <Accordion
-                            isCompact
-                            itemClasses={{
-                                title: ['text-lg', 'font-medium']
-                            }}
-                        >
-                            <AccordionItem key='1' aria-label='What is it?' title='What is it?'>
-                                <p>Steeeam dynamically generates a Steam card image accessable via the URL above.</p><br />
-                                <p>The URL allows you to share your Steam card directly in places like Discord channels, Facebook posts, GitHub markdown files, and more, by simply copying and pasting it where you want to share the image</p>
-                            </AccordionItem>
-                            <AccordionItem key='2' aria-label='Can I customize it?' title='Can I customize it?'>
-                                <p>Yes! Your Steam card is fully customizable, from the background color, to the text color. <Link href={'https://github.com/zevnda/steeeam?tab=readme-ov-file#shareable-image'} target='_blank'>Learn more here</Link>.</p>
-                            </AccordionItem>
-                        </Accordion>
+                    <p className='text-sm'>
+                        This image can be fully customized to your liking. <Link href={'https://github.com/zevnda/steeeam?tab=readme-ov-file#shareable-image'} target='_blank'>Learn more here.</Link>
+                    </p>
+
+                    <div className='flex flex-col gap-2'>
+                        <CodeWithSelection
+                            label='Discord'
+                            code={`https://steeeam.vercel.app/api/${uid}`}
+                        />
+                        <CodeWithSelection
+                            label='Twitter, Facebook, WhatsApp, etc..'
+                            code={`https://steeeam.vercel.app/${uid}`}
+                        />
+                        <CodeWithSelection
+                            label='HTML'
+                            code={`<a href="https://steeeam.vercel.app/${uid}"><img src="https://steeeam.vercel.app/api/${uid}" alt="Generate by Steeeam"/></a>`}
+                        />
+                        <CodeWithSelection
+                            label='Markdown'
+                            code={`[![Generated by Steeeam](https://steeeam.vercel.app/api/${uid})](https://steeeam.vercel.app)`}
+                        />
+                        <CodeWithSelection
+                            label='BBCode'
+                            code={`[url=https://steeeam.vercel.app/${uid}][img alt="Generate by Steeeam"]https://steeeam.vercel.app/api/${uid}[/img][/url]`}
+                        />
                     </div>
-                </div>
-            </div>
-            <div className={`${isCopied ? 'flex' : 'hidden'} flex fixed bottom-0 right-0 m-5 z-50`}>
-                <div className='bg-base border border-light-border rounded-md p-4'>
-                    <p className='font-medium'>Copied to clipboard</p>
                 </div>
             </div>
         </Fragment>

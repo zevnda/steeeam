@@ -8,18 +8,31 @@
 </p>
 
 # Shareable image
-Dynamically generate your Steam card image directly in places like Discord channels, GitHub markdown files, and Facebook posts.
+Dynamically generate your Steam card image directly in places like Discord channels, GitHub markdown files, Twitter posts, and more.
 
-### Discord, Facebook, etc..
-Use the base URL `https://steeeam.vercel.app/api/` and change `<steam_username_or_id>` to your Steam username or steamID64. Use [this tool](https://steamid.io/) to find your steamID64.
+### Discord
 ```
 https://steeeam.vercel.app/api/<steam_username_or_id>
 ```
 
-### GitHub, other markdown
-Use it directly on GitHub or other places that accept markdown by copy/pasting this into your markdown.
+### Twitter, Facebook, WhatsApp, etc..
 ```
-[![My Steam card](https://steeeam.vercel.app/<steam_username_or_id>)](https://steeeam.vercel.app)
+https://steeeam.vercel.app/<steam_username_or_id>
+```
+
+### GitHub and other `.md` and `.mdx` files
+```
+[![My Steam card](https://steeeam.vercel.app/api/<steam_username_or_id>)](https://steeeam.vercel.app)
+``1
+
+### HTML
+```
+<a href="https://steeeam.vercel.app/<steam_username_or_id>"><img src="https://steeeam.vercel.app/api/<steam_username_or_id>" alt="Generate by Steeeam"/></a>
+```
+
+### BBCode
+```
+[url=https://steeeam.vercel.app/<steam_username_or_id>][img alt="Generate by Steeeam"]https://steeeam.vercel.app/api/<steam_username_or_id>[/img][/url]
 ```
 
 # Customize your card

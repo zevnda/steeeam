@@ -13,6 +13,7 @@ module.exports = {
             light: {
                 colors: {
                     'dull': '#000',
+                    'alt': '#787878',
                     'accent': '#fff',
                     'pop': '#171717',
                     'base': '#fafafa',
@@ -31,7 +32,8 @@ module.exports = {
             },
             dark: {
                 colors: {
-                    'dull': '#adadad',
+                    'dull': '#fff',
+                    'alt': '#a4a4a4',
                     'accent': '#fff',
                     'pop': '#ededed',
                     'base': '#0b0b0b',

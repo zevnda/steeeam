@@ -30,9 +30,9 @@ export default function TopGames({ steamId, countryCode }) {
         <Fragment>
             <div className='flex flex-col w-full mt-14'>
                 <div className='flex justify-between items-center'>
-                    <div className='flex items-center gap-1'>
+                    <div className='flex items-center gap-2'>
                         <IoGameController fontSize={22} />
-                        <p className='text-lg font-medium py-2'>
+                        <p className='text-lg font-semibold py-2'>
                             Top 5 Games
                         </p>
                     </div>

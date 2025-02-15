@@ -7,9 +7,9 @@ export default function AccountValue({ totals }) {
         <Fragment>
             <div className='flex flex-col w-full mt-14'>
                 <div className='flex justify-between items-center'>
-                    <div className='flex items-center gap-1'>
+                    <div className='flex items-center gap-2'>
                         <PiGraphBold fontSize={22} />
-                        <p id='games-list' className='text-lg font-medium py-2'>
+                        <p id='games-list' className='text-lg font-semibold py-2'>
                             Account Statistics
                         </p>
                     </div>
@@ -22,7 +22,7 @@ export default function AccountValue({ totals }) {
                         <div className='flex flex-wrap justify-evenly gap-4 w-full lg:justify-start md:gap-10'>
                             <Tooltip closeDelay={0} className='bg-tooltip' content='Based on game prices as of a few seconds ago'>
                                 <div className='flex items-center flex-col lg:items-start'>
-                                    <p className='text-md text-dull font-medium sm:text-lg'>
+                                    <p className='text-md text-alt font-semibold sm:text-lg'>
                                         Current Price
                                     </p>
                                     <Skeleton isLoaded={totals} className='rounded-full'>
@@ -34,7 +34,7 @@ export default function AccountValue({ totals }) {
                             </Tooltip>
                             <Tooltip closeDelay={0} className='bg-tooltip' content='Based on game prices at time of release'>
                                 <div className='flex items-center flex-col lg:items-start'>
-                                    <p className='text-md text-dull font-medium sm:text-lg'>
+                                    <p className='text-md text-alt font-semibold sm:text-lg'>
                                         Initial Price
                                     </p>
                                     <Skeleton isLoaded={totals} className='rounded-full'>

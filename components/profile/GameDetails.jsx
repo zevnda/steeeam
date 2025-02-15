@@ -40,11 +40,11 @@ export default function GameDetails({ gameName, gameId, minutes, lastPlayedTimes
                             <p className='text-md font-medium uppercase text-dull'>Total Platime</p>
                         </div>
                         {parseInt(minutesToHoursCompact(minutes)) > 1 ? (
-                            <p>{minutesToHoursCompact(minutes)} hours</p>
+                            <p className='text-alt'>{minutesToHoursCompact(minutes)} hours</p>
                         ) : parseInt(minutesToHoursCompact(minutes)) === 0 ? (
-                            <p>Never played</p>
+                            <p className='text-alt'>Never played</p>
                         ) : (
-                            <p>{minutesToHoursCompact(minutes)} hour</p>
+                            <p className='text-alt'>{minutesToHoursCompact(minutes)} hour</p>
                         )}
                     </div>
 
@@ -54,9 +54,9 @@ export default function GameDetails({ gameName, gameId, minutes, lastPlayedTimes
                             <p className='text-md font-medium uppercase text-dull'>Last Played</p>
                         </div>
                         {lastPlayedTimestamp > 0 ? (
-                            <p>{moment.unix(lastPlayedTimestamp).format('MMM D, YYYY')}</p>
+                            <p className='text-alt'>{moment.unix(lastPlayedTimestamp).format('MMM D, YYYY')}</p>
                         ) : (
-                            <p>-</p>
+                            <p className='text-alt'>-</p>
                         )}
                     </div>
 
@@ -66,9 +66,9 @@ export default function GameDetails({ gameName, gameId, minutes, lastPlayedTimes
                             <p className='text-md font-medium uppercase text-dull'>Current Price</p>
                         </div>
                         {gameDetail.price_overview ? (
-                            <p>{gameDetail.price_overview.final_formatted}</p>
+                            <p className='text-alt'>{gameDetail.price_overview.final_formatted}</p>
                         ) : (
-                            <p>Free</p>
+                            <p className='text-alt'>Free</p>
                         )}
                     </div>
                 </div>
@@ -84,22 +84,22 @@ export default function GameDetails({ gameName, gameId, minutes, lastPlayedTimes
                     <div className='flex items-center justify-start gap-1 text-sm'>
                         <IoGameController className='text-blue-400' fontSize={20} />
                         {lastPlayedTimestamp > 0 ? (
-                            <p className='truncate'>
+                            <p className='truncate text-alt'>
                                 {moment.unix(lastPlayedTimestamp).format('MMM D, YYYY')}
                             </p>
                         ) : (
-                            <p>-</p>
+                            <p className='text-alt'>-</p>
                         )}
                     </div>
 
                     <div className='flex items-center justify-start flex-grow gap-1 text-sm'>
                         <FaMoneyBillWave className='text-green-400' fontSize={20} />
                         {gameDetail.price_overview ? (
-                            <p className='truncate'>
+                            <p className='truncate text-alt'>
                                 {gameDetail.price_overview.final_formatted}
                             </p>
                         ) : (
-                            <p>Free</p>
+                            <p className='text-alt'>Free</p>
                         )}
                     </div>
                 </div>

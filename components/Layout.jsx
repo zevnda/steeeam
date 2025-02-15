@@ -1,33 +1,8 @@
-import { Fragment, useEffect } from 'react';
+import { Fragment } from 'react';
 import Head from 'next/head';
-import { useTheme } from 'next-themes';
 import { GeistSans } from 'geist/font/sans';
 
 export default function Layout({ children }) {
-    const { theme } = useTheme();
-
-    const getToastStyles = () => {
-        if (typeof window === 'undefined') return {};
-
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const isDarkMode = theme === 'system' ? prefersDark : theme === 'dark';
-
-        const background = isDarkMode ? '#0a0a0a' : '#f5f5f5';
-        const border = isDarkMode ? '1px solid #333' : '1px solid #ccc';
-        const color = isDarkMode ? '#fff' : '#000';
-
-        return { background, border, color, fontSize: 12 };
-    };
-
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-
-        const toastContainers = document.querySelectorAll('.Toastify__toast');
-        toastContainers.forEach(container => {
-            Object.assign(container.style, getToastStyles());
-        });
-    }, [theme]);
-
     return (
         <Fragment>
             <Head>
