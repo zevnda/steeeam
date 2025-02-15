@@ -146,6 +146,23 @@ export default async function handler(req, res) {
 
     res.setHeader('Cache-Control', 'public, max-age=14400, s-maxage=14400, stale-while-revalidate=86400');
 
+    const userAgent = req.headers['user-agent']?.toLowerCase() || '';
+    console.log(userAgent);
+    const isCrawler = userAgent.includes('facebookexternalhit') || userAgent.includes('twitterbot');
+
+    if (isCrawler) {
+        res.setHeader('Content-Type', 'text/html');
+        return res.send(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta property='og:image' content='https://steeeam.vercel.app/api/${userData.personaName}' />
+            <meta property='og:image:type' content='image/png' />
+          </head>
+        </html>
+      `);
+    }
+
     let canvasBuffer;
     const [userData, gameData] = await Promise.all([getUserData(uid), getGameData(uid, country_code)]);
 
