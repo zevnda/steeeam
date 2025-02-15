@@ -164,13 +164,13 @@ export default async function handler(req, res) {
                     <meta name="twitter:card" content="summary_large_image">
                     <meta name="twitter:title" content="${userData.personaName} - Steeeam">
                     <meta name="twitter:image" content="https://steeeam.vercel.app/api/${userData.steamId}">
-                    <meta property="og:url" content="https://steeeam.vercel.app/api/${userData.personaName}">
+                    <meta property="og:url" content="https://steeeam.vercel.app/api/${userData.steamId}">
                     <meta property="og:title" content="${userData.personaName} - Steeeam">
                     <meta property="og:image" content="https://steeeam.vercel.app/api/${userData.steamId}">
                     <meta property="og:image:type" content="image/png">
                 </head>
                 <body>
-                    <img src="https://steeeam.vercel.app/api/${userData.personaName}" alt="${userData.steamId} - Steeeam">
+                    <img src="https://steeeam.vercel.app/api/${userData.steamId}" alt="${userData.personaName} - Steeeam">
                 </body>
             </html>
       `);
