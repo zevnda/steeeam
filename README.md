@@ -144,10 +144,10 @@ https://steeeam.vercel.app/api/zevnda?bg_color=004b49&title_color=7bae7f&text_co
 ### Nordic
 
 ```
-https://steeeam.vercel.app/api/zevnda?bg_color=eff6ff&title_color=2c3639&text_color=3d4f53&sub_title_color=596e76&border_color=dde6ed&border_width=5&progbar_bg=a5c0cd&progbar_color=7a97a5&username_color=596e76
+https://steeeam.vercel.app/api/zevnda?bg_color=eff6ff&title_color=2c3639&text_color=3d4f53&sub_title_color=7a97a5&border_color=dde6ed&border_width=5&progbar_bg=a5c0cd&progbar_color=7a97a5&username_color=596e76&cp_color=5ca9bf&ip_color=5ca9bf
 ```
 
-<img src="https://steeeam.vercel.app/api/zevnda?bg_color=eff6ff&title_color=2c3639&text_color=3d4f53&sub_title_color=596e76&border_color=dde6ed&border_width=5&progbar_bg=a5c0cd&progbar_color=7a97a5&username_color=596e76" width="300" />
+<img src="https://steeeam.vercel.app/api/zevnda?bg_color=eff6ff&title_color=2c3639&text_color=3d4f53&sub_title_color=7a97a5&border_color=dde6ed&border_width=5&progbar_bg=a5c0cd&progbar_color=7a97a5&username_color=596e76&cp_color=5ca9bf&ip_color=5ca9bf" width="300" />
 
 ### Deep Space
 
