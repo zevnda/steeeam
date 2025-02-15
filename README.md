@@ -71,7 +71,7 @@ https://steeeam.vercel.app/api/zevnda?theme=light
 <img src="./public/example2.png" width='300'/>
 
 ```
-https://steeeam.vercel.app/api/zevnda?bg_color=344e41&title_color=f6f4d2&text_color=e8f0fe&sub_title_color=a7c957&border_color=588157&border_width=5&progbar_bg=588157&progbar_color=a7c957
+https://steeeam.vercel.app/api/zevnda?bg_color=1e1b4b&title_color=e0e7ff&sub_title_color=a5b4fc&text_color=c7d2fe&username_color=eef2ff&id_color=818cf8&cp_color=ef4444&ip_color=22c55e&div_color=6366f1&border_color=4338ca&border_width=3&progbar_bg=312e81&progbar_color=6366f1
 ```
 <img src="./public/example3.png" width='300'/>
 
