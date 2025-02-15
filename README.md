@@ -37,7 +37,7 @@ https://steeeam.vercel.app/<steam_username_or_id>
 ```
 
 # Customize your Steeeam card
-Personalize every aspect of your Steeeam card by appending any of the options below, or use the pre-made `light` and `dark` themes for your convenience.
+Personalize every aspect of your Steeeam card by appending any of the options below, or browse the [preset themes](https://github.com/zevnda/steeeam?tab=readme-ov-file#preset-themes) below.
 
 ### Options
 | Name              | Description                                              | Type                                               | Default value |
