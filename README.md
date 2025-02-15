@@ -39,22 +39,6 @@ https://steeeam.vercel.app/<steam_username_or_id>
 # Customize your Steeeam card
 Personalize every aspect of your Steeeam card by appending any of the options below, or use the pre-made `light` and `dark` themes for your convenience.
 
-### Examples
-```
-https://steeeam.vercel.app/api/zevnda?theme=dark
-```
-<img src="./public/example1.png" width='300'/>
-
-```
-https://steeeam.vercel.app/api/zevnda?theme=light
-```
-<img src="./public/example2.png" width='300'/>
-
-```
-https://steeeam.vercel.app/api/zevnda?bg_color=344e41&title_color=f6f4d2&text_color=e8f0fe&sub_title_color=a7c957&border_color=588157&border_width=5&progbar_bg=588157&progbar_color=a7c957
-```
-<img src="./public/example3.png" width='300'/>
-
 ### Options
 | Name              | Description                                              | Type                                               | Default value |
 | ----------------- | -------------------------------------------------------- | -------------------------------------------------- | ------------- |
@@ -74,6 +58,22 @@ https://steeeam.vercel.app/api/zevnda?bg_color=344e41&title_color=f6f4d2&text_co
 | `progbar_bg`      | Progress bar background color.                           | string (hex color)                                 | `ffffff30`    |
 | `progbar_color`   | Progress bar foreground color.                           | string (hex color)                                 | `006fee`      |
 | `theme`           | Choose from 'light' or 'dark'. *(Overrides all options)* | enum                                               | `dark`        |
+
+### Examples
+```
+https://steeeam.vercel.app/api/zevnda?theme=dark
+```
+<img src="./public/example1.png" width='300'/>
+
+```
+https://steeeam.vercel.app/api/zevnda?theme=light
+```
+<img src="./public/example2.png" width='300'/>
+
+```
+https://steeeam.vercel.app/api/zevnda?bg_color=344e41&title_color=f6f4d2&text_color=e8f0fe&sub_title_color=a7c957&border_color=588157&border_width=5&progbar_bg=588157&progbar_color=a7c957
+```
+<img src="./public/example3.png" width='300'/>
 
 # Preset Themes
 
