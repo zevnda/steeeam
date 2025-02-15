@@ -45,7 +45,7 @@ export default function Index({ userData, gamesList, gameData, userConnections, 
                 <meta property='og:url' content='https://steeeam.vercel.app/'></meta>
                 <meta property='og:title' content={`${userData.personaName} - Steeeam`} />
                 <meta property='og:description' content={`An overview of ${userData.personaName}'s Steam account including their library value, total playtime, average game cost, and more.`} />
-                <meta property='og:image' content={userData.avatar} />
+                <meta property='og:image' content={`https://steeeam.vercel.app/api/${userData.steamId}`} />
                 <meta name='twitter:title' content='${userData.personaName} - Steeeam' />
                 <meta name='twitter:description' content={`An overview of ${userData.personaName}'s Steam account including their library value, total playtime, average game cost, and more.`} />
                 <meta name='twitter:image' content={`https://steeeam.vercel.app/api/${userData.steamId}`} />
