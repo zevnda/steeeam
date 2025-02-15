@@ -151,6 +151,7 @@ export default async function handler(req, res) {
     const isCrawler = userAgent.includes('facebookexternalhit') || userAgent.includes('twitterbot');
 
     const [userData, gameData] = await Promise.all([getUserData(uid), getGameData(uid, country_code)]);
+    console.log(userData);
 
     if (isCrawler) {
         res.setHeader('Content-Type', 'text/html');
@@ -162,14 +163,14 @@ export default async function handler(req, res) {
                     <title>${userData.personaName} - Steeeam</title>
                     <meta name="twitter:card" content="summary_large_image">
                     <meta name="twitter:title" content="${userData.personaName} - Steeeam">
-                    <meta name="twitter:image" content="https://steeeam.vercel.app/api/${userData.personaName}">
+                    <meta name="twitter:image" content="https://steeeam.vercel.app/api/${userData.steamId}">
                     <meta property="og:url" content="https://steeeam.vercel.app/api/${userData.personaName}">
                     <meta property="og:title" content="${userData.personaName} - Steeeam">
-                    <meta property="og:image" content="https://steeeam.vercel.app/api/${userData.personaName}">
+                    <meta property="og:image" content="https://steeeam.vercel.app/api/${userData.steamId}">
                     <meta property="og:image:type" content="image/png">
                 </head>
                 <body>
-                    <img src="https://steeeam.vercel.app/api/${userData.personaName}" alt="${userData.personaName} - Steeeam">
+                    <img src="https://steeeam.vercel.app/api/${userData.personaName}" alt="${userData.steamId} - Steeeam">
                 </body>
             </html>
       `);
