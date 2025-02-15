@@ -146,8 +146,6 @@ export default async function handler(req, res) {
 
     res.setHeader('Cache-Control', 'public, max-age=14400, s-maxage=14400, stale-while-revalidate=86400');
 
-    const [userData, gameData] = await Promise.all([getUserData(uid), getGameData(uid, country_code)]);
-    
     const userAgent = req.headers['user-agent']?.toLowerCase() || '';
     console.log(userAgent);
     const isCrawler = userAgent.includes('facebookexternalhit') || userAgent.includes('twitterbot');
@@ -155,17 +153,28 @@ export default async function handler(req, res) {
     if (isCrawler) {
         res.setHeader('Content-Type', 'text/html');
         return res.send(`
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta property='og:image' content='https://steeeam.vercel.app/api/${userData.personaName}' />
-            <meta property='og:image:type' content='image/png' />
-          </head>
-        </html>
+            <!DOCTYPE html>
+            <html lang="en">
+                <head>
+                    <meta charset="utf-8">
+                    <title>${userData.personaName} - Steeeam</title>
+                    <meta name="twitter:card" content="summary_large_image">
+                    <meta name="twitter:title" content="${userData.personaName} - Steeeam">
+                    <meta name="twitter:image" content="https://steeeam.vercel.app/api/${userData.personaName}">
+                    <meta property="og:url" content="https://steeeam.vercel.app/api/${userData.personaName}">
+                    <meta property="og:title" content="${userData.personaName} - Steeeam">
+                    <meta property="og:image" content="https://steeeam.vercel.app/api/${userData.personaName}">
+                    <meta property="og:image:type" content="image/png">
+                </head>
+                <body>
+                    <img src="https://steeeam.vercel.app/api/${userData.personaName}" alt="${userData.personaName} - Steeeam">
+                </body>
+            </html>
       `);
     }
 
     let canvasBuffer;
+    const [userData, gameData] = await Promise.all([getUserData(uid), getGameData(uid, country_code)]);
 
     canvasBuffer = await createFullCanvas(
         userData,
