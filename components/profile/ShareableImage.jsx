@@ -132,7 +132,7 @@ export default function ShareableImage() {
                         />
                         <CodeWithSelection
                             label='BBCode'
-                            code={`[url=https://steeeam.vercel.app/${uid}][img alt="Generate by Steeeam"]https://steeeam.vercel.app/api/${uid}[/img][/url]`}
+                            code={`[url=https://steeeam.vercel.app/${uid}][img]https://steeeam.vercel.app/api/${uid}[/img][/url]`}
                         />
                     </div>
                 </div>
