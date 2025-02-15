@@ -89,7 +89,7 @@ export default function ShareableImage() {
                     <div className='flex items-center gap-2'>
                         <FaImage fontSize={22} />
                         <p className='text-lg font-semibold py-2'>
-                            Shareable Image
+                            Steeeam Card
                         </p>
                     </div>
                 </div>
@@ -103,7 +103,7 @@ export default function ShareableImage() {
                                 src={imgSrc}
                                 width={705}
                                 height={385}
-                                alt='Shareable Image'
+                                alt='Steeeam Card'
                                 className='rounded-md border border-light-border w-full'
                             />
                         </Link>
