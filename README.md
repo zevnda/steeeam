@@ -23,7 +23,7 @@ https://steeeam.vercel.app/<steam_username_or_id>
 ### GitHub and other `.md` and `.mdx` files
 ```
 [![My Steam card](https://steeeam.vercel.app/api/<steam_username_or_id>)](https://steeeam.vercel.app)
-``1
+```
 
 ### HTML
 ```
