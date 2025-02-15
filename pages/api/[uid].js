@@ -146,6 +146,8 @@ export default async function handler(req, res) {
 
     res.setHeader('Cache-Control', 'public, max-age=14400, s-maxage=14400, stale-while-revalidate=86400');
 
+    const [userData, gameData] = await Promise.all([getUserData(uid), getGameData(uid, country_code)]);
+    
     const userAgent = req.headers['user-agent']?.toLowerCase() || '';
     console.log(userAgent);
     const isCrawler = userAgent.includes('facebookexternalhit') || userAgent.includes('twitterbot');
@@ -164,7 +166,6 @@ export default async function handler(req, res) {
     }
 
     let canvasBuffer;
-    const [userData, gameData] = await Promise.all([getUserData(uid), getGameData(uid, country_code)]);
 
     canvasBuffer = await createFullCanvas(
         userData,
