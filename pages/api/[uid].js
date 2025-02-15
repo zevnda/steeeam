@@ -150,6 +150,8 @@ export default async function handler(req, res) {
     console.log(userAgent);
     const isCrawler = userAgent.includes('facebookexternalhit') || userAgent.includes('twitterbot');
 
+    const [userData, gameData] = await Promise.all([getUserData(uid), getGameData(uid, country_code)]);
+
     if (isCrawler) {
         res.setHeader('Content-Type', 'text/html');
         return res.send(`
@@ -174,7 +176,6 @@ export default async function handler(req, res) {
     }
 
     let canvasBuffer;
-    const [userData, gameData] = await Promise.all([getUserData(uid), getGameData(uid, country_code)]);
 
     canvasBuffer = await createFullCanvas(
         userData,
