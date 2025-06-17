@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
@@ -6,20 +7,22 @@ export default function SharePage() {
   const router = useRouter();
   const { uid, ...query } = router.query;
 
-  useEffect(() => {
-    // For direct visits, redirect to the image after a short delay
-    const timer = setTimeout(() => {
-      const apiUrl = `/api/${uid}${Object.keys(query).length ? '?' + new URLSearchParams(query).toString() : ''}`;
-      window.location.href = apiUrl;
-    }, 1000);
+  // useEffect(() => {
+  //   // For direct visits, redirect to the image after a short delay
+  //   const timer = setTimeout(() => {
+  //     const apiUrl = `/api/${uid}${Object.keys(query).length ? '?' + new URLSearchParams(query).toString() : ''}`;
+  //     window.location.href = apiUrl;
+  //   }, 1000);
 
-    return () => clearTimeout(timer);
-  }, [uid, query]);
+  //   return () => clearTimeout(timer);
+  // }, [uid, query]);
 
   if (!uid) return null;
 
   const imageUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://steeeam.vercel.app'}/api/${uid}${Object.keys(query).length ? '?' + new URLSearchParams(query).toString() : ''}`;
   const shareUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://steeeam.vercel.app'}/share/${uid}${Object.keys(query).length ? '?' + new URLSearchParams(query).toString() : ''}`;
+
+  console.log(imageUrl, shareUrl);
 
   return (
     <>
@@ -55,15 +58,11 @@ export default function SharePage() {
         justifyContent: 'center',
         minHeight: '100vh',
       }}>
-        <img 
+        <Image 
           src={imageUrl} 
           alt={`Steam profile for ${uid}`}
-          style={{
-            maxWidth: '100%',
-            height: 'auto',
-            borderRadius: '8px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-          }}
+          width={705}
+          height={385}
           onError={(e) => {
             e.target.style.display = 'none';
           }}
