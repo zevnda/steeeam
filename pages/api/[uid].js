@@ -165,6 +165,7 @@ async function getGameData(uid, countryCode) {
                     );
 
                     // Process response data for each chunk
+                    // eslint-disable-next-line no-unused-vars
                     for (const [_, gameData] of Object.entries(gamePrices.data)) {
                         if (gameData.data && gameData.data.price_overview) {
                             const finalPrice = gameData.data.price_overview.final || 0;
