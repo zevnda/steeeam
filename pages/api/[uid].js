@@ -1,23 +1,33 @@
 import { getRelativeTimeImprecise, resolveVanityUrl, getAverage, minutesToHoursPrecise, minutesToHoursCompact, pricePerHour } from '@/utils/utils';
+import { createCanvas, loadImage, GlobalFonts } from '@napi-rs/canvas';
 import SteamAPI from 'steamapi';
 import * as sidr from 'steamid-resolver';
 import moment from 'moment';
+import path from 'path';
 import axios from 'axios';
 
+// Enhanced caching system
 const cache = new Map();
-const gameDataCache = new Map();
-const avatarCache = new Map();
+const pendingRequests = new Map(); // Request deduplication
 
 // Cache TTL in milliseconds
 const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 const AVATAR_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+const STEAMID_CACHE_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
+const GAME_DATA_CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours
 
-function isCacheValid(timestamp) {
-    return Date.now() - timestamp < CACHE_TTL;
+function isCacheValid(timestamp, ttl = CACHE_TTL) {
+    return Date.now() - timestamp < ttl;
 }
 
-function isAvatarCacheValid(timestamp) {
-    return Date.now() - timestamp < AVATAR_CACHE_TTL;
+// Pre-load fonts once
+let fontsLoaded = false;
+function ensureFontsLoaded() {
+    if (!fontsLoaded) {
+        GlobalFonts.registerFromPath(path.join(process.cwd(), 'public', 'GeistVF.woff2'), 'Geist');
+        GlobalFonts.registerFromPath(path.join(process.cwd(), 'public', 'Elgraine-Black-Italic.ttf'), 'Elgraine');
+        fontsLoaded = true;
+    }
 }
 
 async function getUserData(uid) {
@@ -28,165 +38,209 @@ async function getUserData(uid) {
         return cached.data;
     }
 
-    try {
-        let steamId = cache.get(uid);
-        if (!steamId) {
-            steamId = await resolveVanityUrl(uid);
-            cache.set(uid, steamId);
-        }
-
-        const sapi = new SteamAPI(process.env.STEAM_API_KEY);
-
-        const [userSummary, sidrSummary] = await Promise.all([
-            sapi.getUserSummary(steamId),
-            sidr.steamID64ToFullInfo(steamId)
-        ]);
-
-        const userData = {
-            steamId: steamId,
-            personaName: userSummary.nickname,
-            visible: userSummary.visible,
-            avatar: userSummary.avatar.large,
-            lastLogOff: userSummary.lastLogOffTimestamp,
-            createdAt: userSummary.createdTimestamp,
-            countryCode: userSummary.countryCode,
-            stateCode: userSummary.stateCode,
-            onlineState: sidrSummary.onlineState ? sidrSummary.onlineState[0] : null,
-            location: sidrSummary.location ? sidrSummary.location[0] : 'Unknown',
-        };
-
-        // Cache the result
-        cache.set(cacheKey, { data: userData, timestamp: Date.now() });
-        return userData;
-    } catch (e) {
-        console.error(e);
-        return { error: 'no user' };
+    // Check for pending request to avoid duplicate API calls
+    if (pendingRequests.has(cacheKey)) {
+        return pendingRequests.get(cacheKey);
     }
+
+    const requestPromise = (async () => {
+        try {
+            let steamId = cache.get(`steamid_${uid}`);
+            const steamIdCached = cache.get(`steamid_meta_${uid}`);
+            
+            if (!steamId || !steamIdCached || !isCacheValid(steamIdCached.timestamp, STEAMID_CACHE_TTL)) {
+                steamId = await resolveVanityUrl(uid);
+                cache.set(`steamid_${uid}`, steamId);
+                cache.set(`steamid_meta_${uid}`, { timestamp: Date.now() });
+            }
+
+            const sapi = new SteamAPI(process.env.STEAM_API_KEY);
+
+            // Use Promise.allSettled to handle potential failures gracefully
+            const [userSummaryResult, sidrSummaryResult] = await Promise.allSettled([
+                sapi.getUserSummary(steamId),
+                sidr.steamID64ToFullInfo(steamId)
+            ]);
+
+            const userSummary = userSummaryResult.status === 'fulfilled' ? userSummaryResult.value : null;
+            const sidrSummary = sidrSummaryResult.status === 'fulfilled' ? sidrSummaryResult.value : {};
+
+            if (!userSummary) {
+                throw new Error('Failed to fetch user summary');
+            }
+
+            const userData = {
+                steamId: steamId,
+                personaName: userSummary.nickname,
+                visible: userSummary.visible,
+                avatar: userSummary.avatar.large,
+                lastLogOff: userSummary.lastLogOffTimestamp,
+                createdAt: userSummary.createdTimestamp,
+                countryCode: userSummary.countryCode,
+                stateCode: userSummary.stateCode,
+                onlineState: sidrSummary.onlineState ? sidrSummary.onlineState[0] : null,
+                location: sidrSummary.location ? sidrSummary.location[0] : 'Unknown',
+            };
+
+            // Cache the result
+            cache.set(cacheKey, { data: userData, timestamp: Date.now() });
+            
+            return userData;
+        } catch (e) {
+            console.error('getUserData error:', e);
+            return { error: 'no user' };
+        } finally {
+            pendingRequests.delete(cacheKey);
+        }
+    })();
+
+    pendingRequests.set(cacheKey, requestPromise);
+    return requestPromise;
 }
 
 async function getGameData(uid, countryCode) {
     // Check cache first
     const cacheKey = `games_${uid}_${countryCode}`;
-    const cached = gameDataCache.get(cacheKey);
-    if (cached && isCacheValid(cached.timestamp)) {
+    const cached = cache.get(cacheKey);
+    if (cached && isCacheValid(cached.timestamp, GAME_DATA_CACHE_TTL)) {
         return cached.data;
     }
 
-    try {
-        let steamId = cache.get(uid);
-        if (!steamId) {
-            steamId = await resolveVanityUrl(uid);
-            cache.set(uid, steamId);
-        }
+    // Check for pending request
+    if (pendingRequests.has(cacheKey)) {
+        return pendingRequests.get(cacheKey);
+    }
 
-        const sapi = new SteamAPI(process.env.STEAM_API_KEY);
-
-        const userGames = await sapi.getUserOwnedGames(steamId, {
-            includeExtendedAppInfo: true,
-            includeFreeGames: true,
-            includeFreeSubGames: true,
-            includeUnvettedApps: true
-        });
-
-        // Get appIds and played/unplayed game counts
-        let gameIds = [];
-        let playtime = [];
-        let playedCount = 0;
-        let unplayedCount = 0;
-        let totalPlaytime = 0;
-        for (const item of userGames) {
-            gameIds.push(item.game.id);
-            if (item.minutes > 0) {
-                playedCount++;
-                playtime.push(item.minutes);
-                totalPlaytime += item.minutes;
+    const requestPromise = (async () => {
+        try {
+            let steamId = cache.get(`steamid_${uid}`);
+            if (!steamId) {
+                steamId = await resolveVanityUrl(uid);
+                cache.set(`steamid_${uid}`, steamId);
             }
-            if (item.minutes === 0) unplayedCount++;
-        }
 
-        // Optimize price fetching with concurrent requests and smaller chunks
-        const maxGameIdsPerCall = 200; // Reduced chunk size for faster responses
-        const gameIdChunks = [];
-        for (let i = 0; i < gameIds.length; i += maxGameIdsPerCall) {
-            gameIdChunks.push(gameIds.slice(i, i + maxGameIdsPerCall));
-        }
+            const sapi = new SteamAPI(process.env.STEAM_API_KEY);
 
-        // Limit concurrent requests to avoid rate limiting
-        let prices = [];
-        let totalInitial = 0;
-        let totalFinal = 0;
-        
-        const chunkPromises = gameIdChunks.map(async (chunk) => {
-            try {
-                const chunkString = chunk.join(',');
-                const gamePrices = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${chunkString}&filters=price_overview&cc=${countryCode}`, {
-                    timeout: 10000 // 10 second timeout
-                });
+            const userGames = await sapi.getUserOwnedGames(steamId, {
+                includeExtendedAppInfo: true,
+                includeFreeGames: true,
+                includeFreeSubGames: true,
+                includeUnvettedApps: true
+            });
 
-                let chunkPrices = [];
-                let chunkInitial = 0;
-                let chunkFinal = 0;
-
-                // eslint-disable-next-line no-unused-vars
-                for (const [_, gameData] of Object.entries(gamePrices.data)) {
-                    if (gameData.data && gameData.data.price_overview) {
-                        const finalPrice = gameData.data.price_overview.final || 0;
-                        const initialPrice = gameData.data.price_overview.initial || 0;
-
-                        chunkPrices.push(initialPrice);
-                        chunkInitial += initialPrice;
-                        chunkFinal += finalPrice;
-                    }
+            // Get appIds and played/unplayed game counts
+            let gameIds = [];
+            let playtime = [];
+            let playedCount = 0;
+            let unplayedCount = 0;
+            let totalPlaytime = 0;
+            for (const item of userGames) {
+                gameIds.push(item.game.id);
+                if (item.minutes > 0) {
+                    playedCount++;
+                    playtime.push(item.minutes);
+                    totalPlaytime += item.minutes;
                 }
-
-                return { prices: chunkPrices, initial: chunkInitial, final: chunkFinal };
-            } catch (error) {
-                console.error('Error fetching price chunk:', error);
-                return { prices: [], initial: 0, final: 0 };
+                if (item.minutes === 0) unplayedCount++;
             }
-        });
 
-        // Process chunks with limited concurrency
-        const results = await Promise.all(chunkPromises);
-        
-        results.forEach(result => {
-            prices.push(...result.prices);
-            totalInitial += result.initial;
-            totalFinal += result.final;
-        });
+            // Optimize pricing API calls - use smaller chunks and add timeout
+            const maxGameIdsPerCall = 200; // Reduced chunk size for better reliability
+            const gameIdChunks = [];
+            for (let i = 0; i < gameIds.length; i += maxGameIdsPerCall) {
+                gameIdChunks.push(gameIds.slice(i, i + maxGameIdsPerCall));
+            }
 
-        // Format totals
-        const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
-        const totalInitialFormatted = formatter.format(totalInitial / 100);
-        const totalFinalFormatted = formatter.format(totalFinal / 100);
-        const averageGamePrice = formatter.format(getAverage(prices) / 100);
-        const totalPlaytimeHours = minutesToHoursCompact(totalPlaytime);
-        const averagePlaytime = minutesToHoursPrecise(getAverage(playtime));
-        const totalGames = userGames.length;
+            // Make HTTP calls with timeout and error handling
+            let prices = [];
+            let totalInitial = 0;
+            let totalFinal = 0;
+            
+            await Promise.allSettled(gameIdChunks.map(async (chunk) => {
+                try {
+                    const chunkString = chunk.join(',');
+                    const gamePrices = await axios.get(
+                        `https://store.steampowered.com/api/appdetails?appids=${chunkString}&filters=price_overview&cc=${countryCode}`,
+                        { timeout: 10000 } // 10 second timeout
+                    );
 
-        const gameData = {
-            totals: { totalInitialFormatted, totalFinalFormatted, averageGamePrice, totalPlaytimeHours, averagePlaytime, totalGames },
-            playCount: { playedCount, unplayedCount, totalPlaytime }
-        };
+                    // Process response data for each chunk
+                    for (const [_, gameData] of Object.entries(gamePrices.data)) {
+                        if (gameData.data && gameData.data.price_overview) {
+                            const finalPrice = gameData.data.price_overview.final || 0;
+                            const initialPrice = gameData.data.price_overview.initial || 0;
 
-        // Cache the result
-        gameDataCache.set(cacheKey, { data: gameData, timestamp: Date.now() });
-        return gameData;
-    } catch (e) {
-        console.error(e);
-        return { error: 'private games' };
+                            if (initialPrice > 0) {
+                                prices.push(initialPrice);
+                                totalInitial += initialPrice;
+                                totalFinal += finalPrice;
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.warn(`Failed to fetch pricing for chunk: ${error.message}`);
+                    // Continue with other chunks even if one fails
+                }
+            }));
+
+            // Format totals
+            const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+            const totalInitialFormatted = formatter.format(totalInitial / 100);
+            const totalFinalFormatted = formatter.format(totalFinal / 100);
+            const averageGamePrice = prices.length > 0 ? formatter.format(getAverage(prices) / 100) : '$0.00';
+            const totalPlaytimeHours = minutesToHoursCompact(totalPlaytime);
+            const averagePlaytime = playtime.length > 0 ? minutesToHoursPrecise(getAverage(playtime)) : '0';
+            const totalGames = userGames.length;
+
+            const gameData = {
+                totals: { totalInitialFormatted, totalFinalFormatted, averageGamePrice, totalPlaytimeHours, averagePlaytime, totalGames },
+                playCount: { playedCount, unplayedCount, totalPlaytime }
+            };
+
+            // Cache the result
+            cache.set(cacheKey, { data: gameData, timestamp: Date.now() });
+            
+            return gameData;
+        } catch (e) {
+            console.error('getGameData error:', e);
+            return { error: 'private games' };
+        } finally {
+            pendingRequests.delete(cacheKey);
+        }
+    })();
+
+    pendingRequests.set(cacheKey, requestPromise);
+    return requestPromise;
+}
+
+// Cache for loaded images
+const imageCache = new Map();
+
+async function getCachedImage(imagePath, isAvatar = false) {
+    const cacheKey = `img_${imagePath}`;
+    const cached = imageCache.get(cacheKey);
+    const ttl = isAvatar ? AVATAR_CACHE_TTL : CACHE_TTL;
+    
+    if (cached && isCacheValid(cached.timestamp, ttl)) {
+        return cached.image;
+    }
+
+    try {
+        const image = await loadImage(imagePath);
+        imageCache.set(cacheKey, { image, timestamp: Date.now() });
+        return image;
+    } catch (error) {
+        console.error(`Failed to load image ${imagePath}:`, error);
+        throw error;
     }
 }
 
 export default async function handler(req, res) {
-    // Enhanced caching headers
     res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400');
-    res.setHeader('CDN-Cache-Control', 'max-age=3600');
-    res.setHeader('Vercel-CDN-Cache-Control', 'max-age=3600');
 
     const {
         uid,
-        country_code,
+        country_code = 'US',
         bg_color,
         title_color,
         sub_title_color,
@@ -204,46 +258,44 @@ export default async function handler(req, res) {
         theme
     } = req.query;
 
-    // Check if we can return early with cached SVG
-    const cacheKey = `svg_${uid}_${JSON.stringify(req.query)}`;
-    const cachedSvg = cache.get(cacheKey);
-    if (cachedSvg && isCacheValid(cachedSvg.timestamp)) {
-        res.setHeader('Content-Type', 'image/svg+xml');
-        res.setHeader('X-Cache', 'HIT');
-        return res.status(200).send(cachedSvg.data);
+    try {
+        // Ensure fonts are loaded
+        ensureFontsLoaded();
+
+        const [userData, gameData] = await Promise.all([
+            getUserData(uid), 
+            getGameData(uid, country_code)
+        ]);
+
+        const canvasBuffer = await createFullCanvas(
+            userData,
+            gameData,
+            bg_color,
+            title_color,
+            sub_title_color,
+            text_color,
+            username_color,
+            id_color,
+            cp_color,
+            ip_color,
+            div_color,
+            border_color,
+            border_width,
+            progbar_bg,
+            progbar_color,
+            hide_border,
+            theme
+        );
+
+        res.setHeader('Content-Type', 'image/png');
+        res.status(200).send(canvasBuffer);
+    } catch (error) {
+        console.error('Handler error:', error);
+        res.status(500).json({ error: 'Failed to generate image' });
     }
-
-    const [userData, gameData] = await Promise.all([getUserData(uid), getGameData(uid, country_code)]);
-
-    const svgContent = await createFullSvg(
-        userData,
-        gameData,
-        bg_color,
-        title_color,
-        sub_title_color,
-        text_color,
-        username_color,
-        id_color,
-        cp_color,
-        ip_color,
-        div_color,
-        border_color,
-        border_width,
-        progbar_bg,
-        progbar_color,
-        hide_border,
-        theme
-    );
-
-    // Cache the final SVG
-    cache.set(cacheKey, { data: svgContent, timestamp: Date.now() });
-
-    res.setHeader('Content-Type', 'image/svg+xml');
-    res.setHeader('X-Cache', 'MISS');
-    res.status(200).send(svgContent);
 }
 
-async function createFullSvg(
+async function createFullCanvas(
     userData,
     gameData,
     bg_color = '0b0b0b',
@@ -286,157 +338,263 @@ async function createFullSvg(
     if (theme === 'light') progbar_bg = '00000050';
     if (theme === 'light') progbar_color = '60a5fa';
 
+    // Canvas
     const width = 705;
     const height = 385;
+    const canvas = createCanvas(width, height);
+    const ctx = canvas.getContext('2d');
 
-    // Helper function to convert image to base64
-    async function imageToBase64(imageUrl) {
-        if (!imageUrl) return '';
-        
-        const cacheKey = `avatar_${imageUrl}`;
-        const cached = avatarCache.get(cacheKey);
-        if (cached && isAvatarCacheValid(cached.timestamp)) {
-            return cached.data;
-        }
+    // Background
+    ctx.fillStyle = `#${bg_color}`;
+    ctx.fillRect(0, 0, width, height);
 
-        try {
-            const response = await axios.get(imageUrl, { 
-                responseType: 'arraybuffer',
-                timeout: 5000 // 5 second timeout for avatars
-            });
-            const base64 = Buffer.from(response.data).toString('base64');
-            const dataUri = `data:image/png;base64,${base64}`;
-            
-            // Cache the result
-            avatarCache.set(cacheKey, { data: dataUri, timestamp: Date.now() });
-            return dataUri;
-        } catch (error) {
-            console.error('Error loading avatar:', error);
-            return '';
+    // Watermark
+    ctx.globalAlpha = 0.4;
+    ctx.fillStyle = '#737373';
+    ctx.font = '16px Geist';
+    ctx.fillText('steeeam.vercel.app', canvas.width - 155, canvas.height - 17);
+    const watermarkImage = await getCachedImage(path.join(process.cwd(), 'public', 'canvas', 'steeeam-canvas.png'));
+    ctx.drawImage(watermarkImage, canvas.width - 180, canvas.height - 32);
+    ctx.globalAlpha = 1;
+
+    // Username (truncated if too long)
+    ctx.fillStyle = `#${username_color}`;
+    ctx.font = '700 20px Geist';
+    let username = userData.personaName;
+    const usernameWidth = ctx.measureText(username).width;
+    if (usernameWidth > 180) {
+        let truncatedLength = 0;
+        for (let i = 0; i < username.length; i++) {
+            let truncatedText = username.slice(0, i) + '...';
+            let textWidth = ctx.measureText(truncatedText).width;
+            if (textWidth > 180) {
+                break;
+            }
+            truncatedLength = i;
         }
+        const truncatedUsername = username.slice(0, truncatedLength) + '...';
+        ctx.fillText(truncatedUsername, 20, 180);
+    } else {
+        ctx.fillText(username, 20, 180);
     }
 
-    // Get avatar as base64 (this will be cached)
-    const avatarBase64 = await imageToBase64(userData.avatar);
+    // SteamID
+    ctx.fillStyle = `#${id_color}`;
+    ctx.font = '10px Geist';
+    const steamId = userData.steamId;
+    ctx.fillText(steamId, 20, 195);
 
-    // Calculate progress for games
-    const playedCount = gameData.playCount?.playedCount || 0;
-    const gameCount = gameData.totals?.totalGames || 0;
-    const progressPercent = gameCount > 0 ? ((playedCount / gameCount) * 100).toFixed(0) : 0;
-    const progressWidth = gameCount > 0 ? (220 * (playedCount / gameCount)) : 0;
-
-    // Truncate username if too long (approximate)
-    let displayUsername = userData.personaName;
-    if (displayUsername && displayUsername.length > 20) {
-        displayUsername = displayUsername.slice(0, 17) + '...';
-    }
-
-    // Truncate location if too long
+    // Location
+    const locIcon = await getCachedImage(path.join(process.cwd(), 'public', 'canvas', 'loc-icon.png'));
+    ctx.drawImage(locIcon, 20, 220);
+    ctx.fillStyle = `#${text_color}`;
+    ctx.font = '12px Geist';
     let location = userData.location || 'Unknown';
     if (location.length > 22) location = location.slice(0, 22) + '...';
+    ctx.fillText(location, 43, 232);
 
-    const svg = `
-    <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-            <style>
-                .geist { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-                .username { font-weight: 700; font-size: 20px; }
-                .steamid { font-size: 10px; }
-                .info-text { font-size: 12px; }
-                .title { font-weight: 600; font-size: 16px; }
-                .subtitle { font-size: 16px; }
-                .stat-value { font-weight: 600; font-size: 26px; }
-                .progress-text { font-weight: 700; font-size: 14px; }
-                .progress-normal { font-size: 14px; }
-                .watermark { font-size: 16px; opacity: 0.4; }
-            </style>
-            <clipPath id="avatarClip">
-                <circle cx="100" cy="85" r="65"/>
-            </clipPath>
-        </defs>
-        
-        <!-- Background -->
-        <rect width="${width}" height="${height}" fill="#${bg_color}"/>
-        
-        <!-- Avatar -->
-        ${avatarBase64 ? `<image href="${avatarBase64}" x="35" y="20" width="130" height="130" clip-path="url(#avatarClip)"/>` : ''}
-        
-        <!-- Username -->
-        <text x="20" y="180" class="geist username" fill="#${username_color}">${displayUsername}</text>
-        
-        <!-- SteamID -->
-        <text x="20" y="195" class="geist steamid" fill="#${id_color}">${userData.steamId}</text>
-        
-        <!-- Location -->
-        <text x="43" y="232" class="geist info-text" fill="#${text_color}">${location}</text>
-        
-        <!-- Last seen -->
-        <text x="43" y="257" class="geist info-text" fill="#${text_color}">Last seen ${userData.lastLogOff ? moment.unix(userData.lastLogOff).fromNow() : 'never'}</text>
-        
-        <!-- Created at -->
-        <text x="43" y="283" class="geist info-text" fill="#${text_color}">${userData.createdAt ? `Joined ${getRelativeTimeImprecise(userData.createdAt)} ago` : 'Unknown'}</text>
-        
-        <!-- Vertical divider -->
-        <line x1="200" y1="15" x2="200" y2="${height - 15}" stroke="#${div_color}" stroke-width="1"/>
-        
-        <!-- Account Statistics Header -->
-        <text x="245" y="37" class="geist title" fill="#${title_color}">Account Statistics</text>
-        
-        <!-- Horizontal divider -->
-        <line x1="215" y1="50" x2="${width - 15}" y2="50" stroke="#${div_color}" stroke-width="1"/>
-        
-        ${!gameData.error ? `
-        <!-- Current Price -->
-        <text x="215" y="80" class="geist subtitle" fill="#${sub_title_color}">Current Price</text>
-        <text x="215" y="110" class="geist stat-value" fill="#${cp_color}">${gameData.totals?.totalFinalFormatted || '$0'}</text>
-        
-        <!-- Initial Price -->
-        <text x="370" y="80" class="geist subtitle" fill="#${sub_title_color}">Initial Price</text>
-        <text x="370" y="110" class="geist stat-value" fill="#${ip_color}">${gameData.totals?.totalInitialFormatted || '$0'}</text>
-        
-        <!-- Total Games -->
-        <text x="215" y="160" class="geist subtitle" fill="#${sub_title_color}">Total Games</text>
-        <text x="215" y="190" class="geist stat-value" fill="#${text_color}">${gameData.totals?.totalGames || '0'}</text>
-        
-        <!-- Average Price -->
-        <text x="370" y="160" class="geist subtitle" fill="#${sub_title_color}">Avg. Price</text>
-        <text x="370" y="190" class="geist stat-value" fill="#${text_color}">${gameData.totals?.averageGamePrice || '$0'}</text>
-        
-        <!-- Price Per Hour -->
-        <text x="510" y="160" class="geist subtitle" fill="#${sub_title_color}">Price Per Hour</text>
-        <text x="510" y="190" class="geist stat-value" fill="#${text_color}">${pricePerHour(gameData.totals?.totalFinalFormatted, gameData.totals?.totalPlaytimeHours) || '0'}</text>
-        
-        <!-- Average Playtime -->
-        <text x="215" y="240" class="geist subtitle" fill="#${sub_title_color}">Avg. Playtime</text>
-        <text x="215" y="270" class="geist stat-value" fill="#${text_color}">${gameData.totals?.averagePlaytime || '0'}h</text>
-        
-        <!-- Total Playtime -->
-        <text x="370" y="240" class="geist subtitle" fill="#${sub_title_color}">Total Playtime</text>
-        <text x="370" y="270" class="geist stat-value" fill="#${text_color}">${gameData.totals?.totalPlaytimeHours || '0'}h</text>
-        
-        <!-- Progress Text -->
-        <text x="215" y="324" class="geist progress-text" fill="#${progbar_color}">${playedCount}</text>
-        <text x="${215 + (playedCount.toString().length * 9)}" y="324" class="geist progress-normal" fill="#${text_color}">/</text>
-        <text x="${215 + (playedCount.toString().length * 9) + 10}" y="324" class="geist progress-text" fill="#${progbar_color}">${gameCount}</text>
-        <text x="${215 + (playedCount.toString().length * 9) + (gameCount.toString().length * 9) + 20}" y="324" class="geist progress-normal" fill="#${text_color}">games played</text>
-        <text x="405" y="324" class="geist progress-text" fill="#${text_color}">${progressPercent}%</text>
-        
-        <!-- Progress Bar Background -->
-        <rect x="215" y="330" width="220" height="12" rx="6" fill="#${progbar_bg}"/>
-        
-        <!-- Progress Bar Fill -->
-        <rect x="215" y="330" width="${progressWidth}" height="12" rx="6" fill="#${progbar_color}"/>
-        ` : `
-        <!-- Private Games Message -->
-        <text x="390" y="200" class="geist subtitle" fill="#${sub_title_color}">Private Games List</text>
-        `}
-        
-        <!-- Watermark -->
-        <text x="${width - 155}" y="${height - 17}" class="geist watermark" fill="#737373">steeeam.vercel.app</text>
-        
-        <!-- Border -->
-        ${hide_border !== 'true' ? `<rect x="0" y="0" width="${width}" height="${height}" fill="none" stroke="#${border_color}" stroke-width="${Math.min(parseInt(border_width) || 1, 10)}"/>` : ''}
-    </svg>`;
+    // Last seen
+    const seenIcon = await getCachedImage(path.join(process.cwd(), 'public', 'canvas', 'seen-icon.png'));
+    ctx.drawImage(seenIcon, 20, 245);
+    ctx.fillStyle = `#${text_color}`;
+    ctx.font = '12px Geist';
+    const lastSeen = `Last seen ${userData.lastLogOff ? moment.unix(userData.lastLogOff).fromNow() : 'never'}`;
+    ctx.fillText(lastSeen, 43, 257);
 
-    return svg;
+    // Created at
+    const joinIcon = await getCachedImage(path.join(process.cwd(), 'public', 'canvas', 'join-icon.png'));
+    ctx.drawImage(joinIcon, 20, 270);
+    ctx.fillStyle = `#${text_color}`;
+    ctx.font = '12px Geist';
+    const createdAt = `${userData.createdAt ? `Joined ${getRelativeTimeImprecise(userData.createdAt)} ago` : 'Unknown'}`;
+    ctx.fillText(createdAt, 43, 283);
+
+    // Vertical divider
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = `#${div_color}`;
+    ctx.beginPath();
+    ctx.moveTo(200, 15);
+    ctx.lineTo(200, canvas.height - 15);
+    ctx.stroke();
+
+    // Account stats header
+    const gameStatsIcon = await getCachedImage(path.join(process.cwd(), 'public', 'canvas', 'game-stats-icon.png'));
+    ctx.drawImage(gameStatsIcon, 215, 20);
+    ctx.fillStyle = `#${title_color}`;
+    ctx.font = '600 16px Geist';
+    const gameStatsHeader = 'Account Statistics';
+    ctx.fillText(gameStatsHeader, 245, 37);
+
+    // Horizontal divider
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = `#${div_color}`;
+    ctx.beginPath();
+    ctx.moveTo(215, 50);
+    ctx.lineTo(canvas.width - 15, 50);
+    ctx.stroke();
+
+    if (!gameData.error) {
+        // Account value
+        // Current
+        ctx.fillStyle = `#${sub_title_color}`;
+        ctx.font = '16px Geist';
+        ctx.fillText('Current Price', 215, 80);
+        ctx.fillStyle = `#${cp_color}`;
+        ctx.font = '600 26px Geist';
+        ctx.fillText(`${gameData.totals?.totalFinalFormatted || '$0'}`, 215, 110);
+        //Initial
+        ctx.fillStyle = `#${sub_title_color}`;
+        ctx.font = '16px Geist';
+        ctx.fillText('Initial Price', 370, 80);
+        ctx.fillStyle = `#${ip_color}`;
+        ctx.font = '600 26px Geist';
+        ctx.fillText(`${gameData.totals?.totalInitialFormatted || '$0'}`, 370, 110);
+
+        // Game stats
+        // Total games
+        ctx.fillStyle = `#${sub_title_color}`;
+        ctx.font = '16px Geist';
+        ctx.fillText('Total Games', 215, 160);
+        ctx.fillStyle = `#${text_color}`;
+        ctx.font = '600 26px Geist';
+        ctx.fillText(`${gameData.totals?.totalGames || '0'}`, 215, 190);
+        // Average price
+        ctx.fillStyle = `#${sub_title_color}`;
+        ctx.font = '16px Geist';
+        ctx.fillText('Avg. Price', 370, 160);
+        ctx.fillStyle = `#${text_color}`;
+        ctx.font = '600 26px Geist';
+        ctx.fillText(`${gameData.totals?.averageGamePrice || '$0'}`, 370, 190);
+        // Price per hour
+        ctx.fillStyle = `#${sub_title_color}`;
+        ctx.font = '16px Geist';
+        ctx.fillText('Price Per Hour', 510, 160);
+        ctx.fillStyle = `#${text_color}`;
+        ctx.font = '600 26px Geist';
+        ctx.fillText(`${pricePerHour(gameData.totals?.totalFinalFormatted, gameData.totals?.totalPlaytimeHours) || '0'}`, 510, 190);
+        // Average playtime
+        ctx.fillStyle = `#${sub_title_color}`;
+        ctx.font = '16px Geist';
+        ctx.fillText('Avg. Playtime', 215, 240);
+        ctx.fillStyle = `#${text_color}`;
+        ctx.font = '600 26px Geist';
+        ctx.fillText(`${gameData.totals?.averagePlaytime || '0'}h`, 215, 270);
+        // Total playtime
+        ctx.fillStyle = `#${sub_title_color}`;
+        ctx.font = '16px Geist';
+        ctx.fillText('Total Playtime', 370, 240);
+        ctx.fillStyle = `#${text_color}`;
+        ctx.font = '600 26px Geist';
+        ctx.fillText(`${gameData.totals?.totalPlaytimeHours || '0'}h`, 370, 270);
+
+        // Game progress bar
+        const playedCount = gameData.playCount?.playedCount.toString() || '0';
+        const gameCount = gameData.totals?.totalGames.toString() || '0';
+        const progressPercent = ((parseInt(playedCount) / parseInt(gameCount)) * 100).toFixed(0);
+        if (!isNaN(progressPercent)) {
+            ctx.fillStyle = `#${progbar_color}`;
+            ctx.font = '700 14px Geist';
+            ctx.fillText(playedCount, 215, 324);
+            ctx.fillStyle = `#${text_color}`;
+            ctx.font = '14px Geist';
+            ctx.fillText('/', (ctx.measureText(playedCount).width + 215) + 5, 324);
+            ctx.fillStyle = `#${progbar_color}`;
+            ctx.font = '700 14px Geist';
+            ctx.fillText(gameCount, (ctx.measureText(playedCount).width + 215) + 15, 324);
+            ctx.fillStyle = `#${text_color}`;
+            ctx.font = '14px Geist';
+            ctx.fillText('games played', (ctx.measureText(playedCount).width + ctx.measureText(gameCount).width) + 215 + 20, 324);
+            ctx.font = '700 14px Geist';
+            ctx.fillText(`${progressPercent}%`, 405, 324);
+        }
+
+        async function createRoundedProgressBar(barwidth, barheight, progress, barColor, backgroundColor, borderRadius) {
+            if (isNaN(progress)) return;
+            ctx.fillStyle = backgroundColor;
+            roundRect(ctx, 215, 330, barwidth, barheight, borderRadius, true, false);
+            const barWidth = Math.floor(barwidth * (progress / 100));
+            ctx.fillStyle = barColor;
+            roundRect(ctx, 215, 330, barWidth, barheight, borderRadius, true, true);
+        }
+
+        async function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+            if (typeof stroke === 'undefined') {
+                stroke = true;
+            }
+            if (typeof radius === 'undefined') {
+                radius = 5;
+            }
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.arcTo(x + width, y, x + width, y + radius, radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
+            ctx.lineTo(x + radius, y + height);
+            ctx.arcTo(x, y + height, x, y + height - radius, radius);
+            ctx.lineTo(x, y + radius);
+            ctx.arcTo(x, y, x + radius, y, radius);
+            ctx.closePath();
+            if (stroke) {
+                ctx.stroke();
+            }
+            if (fill) {
+                ctx.fill();
+            }
+        }
+        const barwidth = 220;
+        const barheight = 12;
+        const progress = (parseInt(playedCount) / parseInt(gameCount)) * 100;
+        const barColor = `#${progbar_color}`;
+        const backgroundColor = `#${progbar_bg}`;
+        const borderRadius = 6;
+        await createRoundedProgressBar(barwidth, barheight, progress, barColor, backgroundColor, borderRadius);
+    } else {
+        ctx.fillStyle = `#${sub_title_color}`;
+        ctx.font = '16px Geist';
+        ctx.fillText('Private Games List', 390, 200);
+    }
+
+    // Avatar with caching
+    async function drawCenteredRoundedImage() {
+        try {
+            const avatar = await getCachedImage(userData.avatar, true);
+            const desiredWidth = 130;
+            const desiredHeight = 130;
+            const scaleFactor = Math.min(desiredWidth / avatar.width, desiredHeight / avatar.height);
+            const newWidth = avatar.width * scaleFactor;
+            const newHeight = avatar.height * scaleFactor;
+            ctx.save();
+            ctx.beginPath();
+            const cornerRadius = newWidth / 2;
+            const x = 35;
+            const y = 20;
+            ctx.moveTo(x + cornerRadius, y);
+            ctx.arcTo(x + newWidth, y, x + newWidth, y + newHeight, cornerRadius);
+            ctx.arcTo(x + newWidth, y + newHeight, x, y + newHeight, cornerRadius);
+            ctx.arcTo(x, y + newHeight, x, y, cornerRadius);
+            ctx.arcTo(x, y, x + newWidth, y, cornerRadius);
+            ctx.closePath();
+            ctx.clip();
+            ctx.drawImage(avatar, x, y, newWidth, newHeight);
+            ctx.restore();
+        } catch (error) {
+            console.warn('Failed to load avatar, using fallback');
+            // Could implement a fallback avatar here
+        }
+    }
+    
+    if (userData.avatar && !userData.error) {
+        await drawCenteredRoundedImage();
+    }
+
+    // Draw border
+    if (hide_border !== 'true') {
+        ctx.strokeStyle = `#${border_color}`;
+        ctx.lineWidth = parseInt(border_width >= 10 ? 10 : border_width);
+        ctx.strokeRect(0, 0, canvas.width, canvas.height);
+    }
+
+    const buffer = canvas.toBuffer('image/png');
+    return buffer;
 }
