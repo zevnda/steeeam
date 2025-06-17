@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Button } from '@heroui/react';
 import SearchInput from './profile/SearchInput';
 
-export default function PrivateGames({ steamId }) {
+export default function PrivateGames({ steamId, countryCode, countryAbbr }) {
     return (
         <Fragment>
             <div className='flex justify-center w-full h-full'>
@@ -15,7 +15,7 @@ export default function PrivateGames({ steamId }) {
                             Change Account Privacy
                         </Button>
                     </Link>
-                    <SearchInput />
+                    <SearchInput countryCode={countryCode} countryAbbr={countryAbbr} />
                 </div>
             </div>
         </Fragment>

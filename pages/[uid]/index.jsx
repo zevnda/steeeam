@@ -69,8 +69,13 @@ export async function getServerSideProps(context) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-        const data = await fetch(`${domain}/api/user-data?uid=${uid}&${searchParams.toString()}`, { signal: controller.signal })
-            .then(response => response.json());
+        const data = await fetch(`${domain}/api/user-data?uid=${uid}&${searchParams.toString()}`, { 
+            signal: controller.signal,
+            headers: {
+                'Accept': 'application/json',
+                'User-Agent': 'Steeeam/1.0'
+            }
+        }).then(response => response.json());
 
         clearTimeout(timeoutId);
 

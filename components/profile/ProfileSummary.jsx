@@ -10,9 +10,11 @@ import ShareableImage from './ShareableImage';
 import { UserDataContext } from '../UserDataContext';
 
 export default function ProfileSummary({ steamId, countryCode, countryAbbr }) {
-    const { totals, playCount } = useContext(UserDataContext);
+    const { totals, playCount, gameData } = useContext(UserDataContext);
 
-    if (!totals) return <PrivateGames steamId={steamId} />;
+    if (!totals || !gameData) {
+        return <PrivateGames steamId={steamId} countryCode={countryCode} countryAbbr={countryAbbr} />;
+    }
 
     return (
         <Fragment>
