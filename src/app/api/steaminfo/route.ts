@@ -1,12 +1,16 @@
-import { resolveVanityUrl, sidToShortURL } from '@/utils/utils'
+import { Redis } from '@upstash/redis'
 import { NextResponse } from 'next/server'
 import SteamAPI from 'steamapi'
 import SteamID from 'steamid'
 import * as sidr from 'steamid-resolver'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const userSummaryCache = new Map<string, { data: any; timestamp: number }>()
-const CACHE_TTL = 24 * 60 * 60 * 1000 // 24 hours
+import { resolveVanityUrl, sidToShortURL } from '@/utils/utils'
+
+const redis = new Redis({
+  url: process.env.KV_REST_API_URL!,
+  token: process.env.KV_REST_API_TOKEN!,
+})
+const CACHE_TTL = 24 * 60 * 60 // 24 hours
 
 const apiKey = process.env.STEAM_API_KEY ?? ''
 if (!apiKey) {
@@ -23,10 +27,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'User ID is required' }, { status: 400 })
     }
 
-    const cacheKey = id
-    const cached = userSummaryCache.get(cacheKey)
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-      return NextResponse.json({ success: true, userSummary: cached.data }, { status: 200 })
+    const cacheKey = `steaminfo:${id}`
+    const cached = await redis.get(cacheKey)
+    if (cached) {
+      return NextResponse.json({ success: true, userSummary: cached }, { status: 200 })
     }
 
     const steamId = await resolveVanityUrl(id)
@@ -37,7 +41,7 @@ export async function POST(req: Request) {
 
     const userSummary = await getUserSummary(steamId)
 
-    userSummaryCache.set(cacheKey, { data: userSummary, timestamp: Date.now() })
+    await redis.set(cacheKey, userSummary, { ex: CACHE_TTL })
 
     return NextResponse.json({ success: true, userSummary: userSummary }, { status: 200 })
   } catch (err) {
