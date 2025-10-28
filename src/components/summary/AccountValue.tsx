@@ -5,10 +5,9 @@ import { PiGraphBold } from 'react-icons/pi'
 
 interface AccountValueProps {
   userGameData: UserGameData | null
-  isLoading: boolean
 }
 
-export default function AccountValue({ userGameData, isLoading }: AccountValueProps) {
+export default function AccountValue({ userGameData }: AccountValueProps) {
   return (
     <div className='flex flex-col w-full mt-14'>
       <div className='flex justify-between items-center'>
@@ -28,7 +27,7 @@ export default function AccountValue({ userGameData, isLoading }: AccountValuePr
             <Tooltip closeDelay={0} className='bg-tooltip' content='Based on game prices as of a few seconds ago'>
               <div className='flex items-center flex-col lg:items-start'>
                 <p className='text-md text-alt font-semibold sm:text-lg'>Current Price</p>
-                <Skeleton isLoaded={!isLoading} className='rounded-full'>
+                <Skeleton isLoaded={userGameData !== null} className='rounded-full'>
                   <p className='text-2xl font-bold text-red-400 md:text-3xl'>
                     {userGameData ? userGameData.totals.totalFinalFormatted : '$0,000.00'}
                   </p>
@@ -38,7 +37,7 @@ export default function AccountValue({ userGameData, isLoading }: AccountValuePr
             <Tooltip closeDelay={0} className='bg-tooltip' content='Based on game prices at time of release'>
               <div className='flex items-center flex-col lg:items-start'>
                 <p className='text-md text-alt font-semibold sm:text-lg'>Initial Price</p>
-                <Skeleton isLoaded={!isLoading} className='rounded-full'>
+                <Skeleton isLoaded={userGameData !== null} className='rounded-full'>
                   <p className='text-2xl font-bold text-green-400 md:text-3xl'>
                     {userGameData ? userGameData.totals.totalInitialFormatted : '$0,000.00'}
                   </p>

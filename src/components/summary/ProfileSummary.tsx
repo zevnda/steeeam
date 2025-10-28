@@ -50,7 +50,6 @@ export default function ProfileSummary({
           setInputValue={setInputValue}
           handleSubmit={handleSubmit}
           handleEnterPress={handleEnterPress}
-          isLoading={false}
         />
       </div>
 
@@ -72,7 +71,7 @@ export default function ProfileSummary({
       ) : (
         <>
           <div className='flex items-start flex-col gap-12'>
-            <AccountValue userGameData={userGameData} isLoading={false} />
+            <AccountValue userGameData={userGameData} />
             <GameStats userGameData={userGameData} currency={currency} />
 
             <div className='flex justify-between items-start flex-col w-full gap-8 lg:flex-row'>
