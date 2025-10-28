@@ -1,0 +1,67 @@
+@import 'tailwindcss';
+@plugin './hero.ts';
+@source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --color-dull: #fff;
+  --color-alt: #a4a4a4;
+  --color-accent: #fff;
+  --color-pop: #ededed;
+  --color-base: #0b0b0b;
+  --color-base-hover: #0d0d0d;
+  --color-tooltip: #1a1a1a;
+  --color-light-border: #ffffff30;
+  --color-hover-border: #ffffff40;
+  --color-btn-active: #1f1f1f;
+  --color-link: #888;
+  --color-link-hover: #fff;
+  --color-secondary: #ebebeb;
+  --color-secondary-foreground: #000;
+  --color-anchor: #888;
+  --color-anchor-hover: #fff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-dull: var(--color-dull);
+  --color-alt: var(--color-alt);
+  --color-accent: var(--color-accent);
+  --color-pop: var(--color-pop);
+  --color-base: var(--color-base);
+  --color-base-hover: var(--color-base-hover);
+  --color-tooltip: var(--color-tooltip);
+  --color-light-border: var(--color-light-border);
+  --color-hover-border: var(--color-hover-border);
+  --color-btn-active: var(--color-btn-active);
+  --color-link: var(--color-link);
+  --color-link-hover: var(--color-link-hover);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-foreground: var(--color-secondary-foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter);
+}
+
+a {
+  color: var(--color-anchor);
+}
+
+a:hover {
+  color: var(--color-anchor-hover);
+}

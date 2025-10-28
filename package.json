@@ -1,35 +1,41 @@
 {
-    "name": "steeeam",
-    "version": "0.1.0",
-    "private": true,
-    "scripts": {
-        "dev": "next dev",
-        "build": "next build",
-        "start": "next start",
-        "lint": "next lint"
-    },
-    "dependencies": {
-        "@heroui/react": "^2.6.14",
-        "@napi-rs/canvas": "^0.1.52",
-        "axios": "^1.6.8",
-        "framer-motion": "^11.1.7",
-        "geist": "^1.3.0",
-        "moment": "^2.30.1",
-        "next": "14.2.24",
-        "next-themes": "^0.3.0",
-        "react": "^18.3.1",
-        "react-dom": "^18.3.1",
-        "react-icons": "^5.1.0",
-        "react-toastify": "^11.0.3",
-        "steam-level": "^0.0.2",
-        "steamapi": "^3.0.8",
-        "steamid": "^2.0.0",
-        "steamid-resolver": "^1.3.4"
-    },
-    "devDependencies": {
-        "eslint": "^8.57.0",
-        "eslint-config-next": "14.2.3",
-        "postcss": "^8",
-        "tailwindcss": "^3.4.1"
-    }
+  "name": "nextjs-blank-template",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build && next-sitemap",
+    "postbuild": "next-sitemap",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@heroui/react": "^2.8.5",
+    "@napi-rs/canvas": "^0.1.52",
+    "@vercel/analytics": "^1.5.0",
+    "framer-motion": "^12.23.24",
+    "moment": "^2.30.1",
+    "next": "16.0.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "react-icons": "^5.5.0",
+    "steam-level": "^0.0.2",
+    "steamapi": "^3.1.3",
+    "steamid": "^2.1.0",
+    "steamid-resolver": "^1.4.0"
+  },
+  "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.0",
+    "next-sitemap": "^4.2.3",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
 }
