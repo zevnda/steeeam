@@ -78,6 +78,7 @@ export const metadata: Metadata = {
   },
   other: {
     'og:logo': 'https://steeeam.vercel.app/logo.png',
+    'google-site-verification': 'gOZEIhRh4BCNzE1r4etZeuJoex3aVaUrATjMnsnyYuY',
   },
 }
 
