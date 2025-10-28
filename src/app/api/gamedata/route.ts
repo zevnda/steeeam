@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import SteamLevel from 'steam-level'
 import SteamAPI, { Game, GameDetails, GameInfo, GameInfoExtended, UserPlaytime } from 'steamapi'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const gameDataCache = new Map<string, { data: any; timestamp: number }>()
 const CACHE_TTL = 24 * 60 * 60 * 1000 // 24 hours
 

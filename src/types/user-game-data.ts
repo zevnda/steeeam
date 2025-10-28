@@ -53,5 +53,4 @@ export interface UserGameData {
     requiredXP: number
     level: number
   }
-  error?: string
 }

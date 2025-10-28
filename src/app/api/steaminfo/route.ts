@@ -4,6 +4,7 @@ import SteamAPI from 'steamapi'
 import SteamID from 'steamid'
 import * as sidr from 'steamid-resolver'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const userSummaryCache = new Map<string, { data: any; timestamp: number }>()
 const CACHE_TTL = 24 * 60 * 60 * 1000 // 24 hours
 
