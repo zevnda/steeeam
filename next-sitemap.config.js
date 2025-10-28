@@ -1,5 +1,5 @@
 module.exports = {
-  siteUrl: 'http://localhost:3000',
+  siteUrl: 'https://steeeam.vercel.app',
   generateIndexSitemap: false,
   generateRobotsTxt: true,
   sitemapBaseFileName: 'sitemap',
