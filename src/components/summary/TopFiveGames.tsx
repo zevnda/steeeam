@@ -13,7 +13,7 @@ interface TopFiveGamesProps {
   isLoading?: boolean
 }
 
-export default function TopFiveGames({ id, userGameData, isLoading }: TopFiveGamesProps) {
+export default function TopFiveGames({ id, userGameData }: TopFiveGamesProps) {
   if (!userGameData) {
     return (
       <div className='flex flex-col w-full gap-4 mt-10'>
@@ -45,7 +45,7 @@ export default function TopFiveGames({ id, userGameData, isLoading }: TopFiveGam
           <Link key={item.game.id} href={`https://store.steampowered.com/app/${item.game.id}`} target='_blank'>
             <div className='bg-base border border-light-border rounded-md min-h-[61.22px] hover:bg-base-hover hover:border-hover-border md:min-h-[110px]'>
               <div className='flex gap-2'>
-                <Skeleton isLoaded={!isLoading}>
+                <Skeleton isLoaded={item.game.capsuleFilename !== ''}>
                   <Image
                     className='rounded-l-md min-h-[110px] min-w-[131px] max-w-[131px] object-cover md:min-w-[231px] md:max-w-[231px]'
                     src={`https://cdn.cloudflare.steamstatic.com/steam/apps/${item.game.id}/header.jpg`}
@@ -59,7 +59,7 @@ export default function TopFiveGames({ id, userGameData, isLoading }: TopFiveGam
                   userGameData={userGameData}
                   gameName={item.game.name}
                   minutes={item.minutes}
-                  lastPlayedTimestamp={item.lastPlayedTimestamp}
+                  recentMinutes={item.recentMinutes}
                 />
               </div>
             </div>

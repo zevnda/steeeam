@@ -3,6 +3,7 @@ import type { UserSummary } from '@/types/user-summary'
 
 import { Suspense } from 'react'
 
+import Footer from '@/components/Footer'
 import Loader from '@/components/Loader'
 import Sidebar from '@/components/sidebar/Sidebar'
 import ProfileSummary from '@/components/summary/ProfileSummary'
@@ -63,19 +64,22 @@ async function UserSummary({ id, currency }: { id: string; currency?: string }) 
   const gameDataPromise = fetchUserGameData(userSummary.steamID64[0], currency)
 
   return (
-    <div className='max-w-7xl h-screen mx-auto'>
-      <div className='flex items-center flex-col lg:items-start lg:gap-10 p-4 lg:p-6'>
-        <Sidebar userSummary={userSummary} />
+    <>
+      <div className='max-w-7xl h-full mx-auto'>
+        <div className='flex items-center flex-col lg:items-start lg:gap-10 p-4 lg:p-6'>
+          <Sidebar userSummary={userSummary} />
 
-        <div className='relative w-full h-full min-h-screen lg:pl-[250px]'>
-          <Suspense
-            fallback={<ProfileSummary userSummary={userSummary} userGameData={null} error={''} currency={currency} />}
-          >
-            <GameDataSection gameDataPromise={gameDataPromise} userSummary={userSummary} currency={currency} />
-          </Suspense>
+          <div className='relative w-full h-full min-h-screen lg:pl-[250px]'>
+            <Suspense
+              fallback={<ProfileSummary userSummary={userSummary} userGameData={null} error={''} currency={currency} />}
+            >
+              <GameDataSection gameDataPromise={gameDataPromise} userSummary={userSummary} currency={currency} />
+            </Suspense>
+          </div>
         </div>
       </div>
-    </div>
+      <Footer fixed={false} />
+    </>
   )
 }
 

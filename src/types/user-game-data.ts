@@ -22,7 +22,6 @@ export interface UserGameData {
     minutes: number
     recentMinutes: number
     disconnectedMinutes: number
-
     lastPlayedTimestamp?: number
   }[]
   topFiveGameDetails: {

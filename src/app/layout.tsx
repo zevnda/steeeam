@@ -88,7 +88,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang='en' className='bg-black'>
+    <html lang='en'>
       <body className={`${inter.variable} antialiased dark`}>
         <Providers>{children}</Providers>
         <Analytics />

@@ -1,19 +1,20 @@
 import type { UserGameData } from '@/types/user-game-data'
 
-import { minutesToHoursCompact } from '@/utils/utils'
 import moment from 'moment'
 import { FaMoneyBillWave } from 'react-icons/fa'
 import { IoGameController } from 'react-icons/io5'
 import { MdAvTimer } from 'react-icons/md'
 
+import { minutesToHoursCompact } from '@/utils/utils'
+
 interface GameDetailsProps {
   userGameData: UserGameData | null
   gameName: string
   minutes: number
-  lastPlayedTimestamp?: number
+  recentMinutes?: number
 }
 
-export default function GameDetails({ userGameData, gameName, minutes, lastPlayedTimestamp }: GameDetailsProps) {
+export default function GameDetails({ userGameData, gameName, minutes, recentMinutes }: GameDetailsProps) {
   const gameDetail = userGameData?.topFiveGameDetails.find(g => g.name === gameName)
 
   return (
@@ -38,10 +39,10 @@ export default function GameDetails({ userGameData, gameName, minutes, lastPlaye
         <div className='flex flex-col text-sm'>
           <div className='flex items-center gap-1'>
             <IoGameController className='text-blue-400' fontSize={20} />
-            <p className='text-md font-medium uppercase text-dull'>Last Played</p>
+            <p className='text-md font-medium uppercase text-dull'>Recent Playtime</p>
           </div>
-          {lastPlayedTimestamp && lastPlayedTimestamp > 0 ? (
-            <p className='text-alt'>{moment.unix(lastPlayedTimestamp).format('MMM D, YYYY')}</p>
+          {recentMinutes && recentMinutes > 0 ? (
+            <p className='text-alt'>{moment.unix(recentMinutes).format('MMM D, YYYY')}</p>
           ) : (
             <p className='text-alt'>-</p>
           )}
@@ -68,8 +69,8 @@ export default function GameDetails({ userGameData, gameName, minutes, lastPlaye
 
         <div className='flex items-center justify-start gap-1 text-sm'>
           <IoGameController className='text-blue-400' fontSize={20} />
-          {lastPlayedTimestamp && lastPlayedTimestamp > 0 ? (
-            <p className='truncate text-alt'>{moment.unix(lastPlayedTimestamp).format('MMM D, YYYY')}</p>
+          {recentMinutes && recentMinutes > 0 ? (
+            <p className='truncate text-alt'>{moment.unix(recentMinutes).format('MMM D, YYYY')}</p>
           ) : (
             <p className='text-alt'>-</p>
           )}

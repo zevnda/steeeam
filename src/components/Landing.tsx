@@ -33,7 +33,7 @@ export default function Landing() {
 
   return (
     <div
-      className='absolute flex justify-center items-center top-0 left-0 w-screen px-8 h-screen bg-black'
+      className='absolute flex justify-center items-center top-0 left-0 w-screen px-8 h-screen bg-base bg-no-repeat bg-center bg-cover'
       style={{ backgroundImage: 'url(/landing-bg.svg)' }}
     >
       <div className='flex flex-col justify-center items-center space-y-4 md:w-[50%]'>

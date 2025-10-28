@@ -81,7 +81,7 @@ export default function ProfileSummary({
           </div>
 
           <div className='flex items-start flex-col gap-4'>
-            <TopFiveGames id={userSummary.steamID64[0]} userGameData={userGameData} isLoading={false} />
+            <TopFiveGames id={userSummary.steamID64[0]} userGameData={userGameData} />
           </div>
 
           <div className='flex items-start flex-col gap-4'>
