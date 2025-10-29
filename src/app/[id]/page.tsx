@@ -105,7 +105,7 @@ async function UserSummary({ id, currency }: { id: string; currency?: string }) 
         <div className='flex items-center flex-col lg:items-start lg:gap-10 p-4 lg:p-6'>
           <Sidebar userSummary={userSummary} />
 
-          <div className='relative w-full h-full min-h-screen lg:pl-[250px]'>
+          <div className='relative w-full h-full min-h-screen lg:pl-[230px]'>
             <Suspense
               fallback={<ProfileSummary userSummary={userSummary} userGameData={null} error={''} currency={currency} />}
             >

@@ -43,7 +43,7 @@ export default function ProfileSummary({
   }
 
   return (
-    <>
+    <div className='lg:border-l border-light-border lg:pl-4'>
       <div className='flex justify-between items-center flex-col gap-4 lg:items-end lg:flex-row'>
         <SearchInput
           placeholder='Search again'
@@ -110,6 +110,6 @@ export default function ProfileSummary({
           </div>
         </>
       )}
-    </>
+    </div>
   )
 }
