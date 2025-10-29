@@ -1,11 +1,14 @@
 import { resolveVanityUrl } from '@/utils/utils'
 import { NextResponse } from 'next/server'
+import { createClient } from 'redis'
 import SteamLevel from 'steam-level'
 import SteamAPI, { Game, GameDetails, GameInfo, GameInfoExtended, UserPlaytime } from 'steamapi'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const gameDataCache = new Map<string, { data: any; timestamp: number }>()
-const CACHE_TTL = 24 * 60 * 60 * 1000 // 24 hours
+const redis = createClient({
+  url: process.env.REDIS_URL!,
+})
+await redis.connect()
+const CACHE_TTL = 24 * 60 * 60 // 24 hours
 
 interface UserGame {
   game: {
@@ -31,11 +34,11 @@ const sapi = new SteamAPI(apiKey)
 export async function POST(req: Request) {
   try {
     const { id, currency = 'us' } = await req.json()
-    const cacheKey = `${id}:${currency}`
 
-    const cached = gameDataCache.get(cacheKey)
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-      return NextResponse.json({ success: true, userGameData: cached.data }, { status: 200 })
+    const cacheKey = `gamedata:${id}:${currency}`
+    const cached = await redis.get(cacheKey)
+    if (cached) {
+      return NextResponse.json({ success: true, userGameData: JSON.parse(cached) }, { status: 200 })
     }
 
     let countryCode = 'USD'
@@ -62,7 +65,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: userGameData.error }, { status: 403 })
     }
 
-    gameDataCache.set(cacheKey, { data: userGameData, timestamp: Date.now() })
+    await redis.set(cacheKey, JSON.stringify(userGameData), { EX: CACHE_TTL })
 
     return NextResponse.json({ success: true, userGameData: userGameData }, { status: 200 })
   } catch (err) {

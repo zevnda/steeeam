@@ -6,9 +6,13 @@ import { getRelativeTimeImprecise, pricePerHour } from '@/utils/utils'
 import { createCanvas, GlobalFonts, loadImage, SKRSContext2D } from '@napi-rs/canvas'
 import moment from 'moment'
 import { NextResponse } from 'next/server'
+import { createClient } from 'redis'
 
-const imageCache = new Map<string, { buffer: Buffer; timestamp: number }>()
-const CACHE_TTL = 24 * 60 * 60 * 1000 // 24 hours
+const redis = createClient({
+  url: process.env.REDIS_URL!,
+})
+await redis.connect()
+const CACHE_TTL = 24 * 60 * 60 // 24 hours
 
 // Pre-load fonts once
 let fontsLoaded = false
@@ -330,7 +334,7 @@ async function createFullCanvas(
     ctx.fillText('Private Games List', 390, 200)
   }
 
-  // Avatar with caching
+  // Avatar
   async function drawCenteredRoundedImage() {
     try {
       const avatar = await loadImage(userData.avatar.large)
@@ -376,11 +380,12 @@ async function createFullCanvas(
 export async function GET(req: Request) {
   const url = new URL(req.url)
 
-  const cacheKey = url.pathname + url.search
+  const cacheKey = `canvas:${url.pathname}:${url.searchParams.toString()}`
+  const cached = await redis.get(cacheKey)
 
-  const cached = imageCache.get(cacheKey)
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    return new NextResponse(new Uint8Array(cached.buffer), {
+  if (cached) {
+    const buffer = Buffer.from(cached as string, 'base64')
+    return new NextResponse(new Uint8Array(buffer), {
       status: 200,
       headers: {
         'Content-Type': 'image/png',
@@ -436,7 +441,7 @@ export async function GET(req: Request) {
 
   const uint8Array = new Uint8Array(buffer)
 
-  imageCache.set(cacheKey, { buffer, timestamp: Date.now() })
+  await redis.set(cacheKey, Buffer.from(buffer).toString('base64'), { EX: CACHE_TTL })
 
   return new NextResponse(uint8Array, {
     status: 200,
