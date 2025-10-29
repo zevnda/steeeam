@@ -5,7 +5,7 @@
     <p align="center">
         Calculate your game library value, total playtime, average game cost, and more. Dynamically generate a shareable card to brag (or cry) about your collection on Discord, GitHub, and other platforms.
     </p>
-    <img src="./public/steeeam-og-image.png" width='400' />
+    <img src="./public/og-image.png" width='400' />
 </div>
 
 # Steeeam card
