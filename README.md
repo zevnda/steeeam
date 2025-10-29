@@ -13,27 +13,27 @@ Dynamically generate your Steeeam card directly in places like Discord channels,
 
 ### Discord
 ```
-https://steeeam.vercel.app/api/<steam_username_or_id>
+https://steeeam.vercel.app/api/STEAM_USERNAME_OR_ID64
 ```
 
 ### Twitter, Facebook, WhatsApp, etc..
 ```
-https://steeeam.vercel.app/<steam_username_or_id>
+https://steeeam.vercel.app/STEAM_USERNAME_OR_ID64
 ```
 
 ### GitHub and other `.md` and `.mdx` files
 ```
-[![My Steam card](https://steeeam.vercel.app/api/<steam_username_or_id>)](https://steeeam.vercel.app)
+[![My Steam card](https://steeeam.vercel.app/api/STEAM_USERNAME_OR_ID64)](https://steeeam.vercel.app)
 ```
 
 ### HTML
 ```
-<a href="https://steeeam.vercel.app/<steam_username_or_id>"><img src="https://steeeam.vercel.app/api/<steam_username_or_id>" alt="Generate by Steeeam"/></a>
+<a href="https://steeeam.vercel.app/STEAM_USERNAME_OR_ID64"><img src="https://steeeam.vercel.app/api/STEAM_USERNAME_OR_ID64" alt="Generate by Steeeam"/></a>
 ```
 
 ### BBCode
 ```
-[url=https://steeeam.vercel.app/<steam_username_or_id>][img alt="Generate by Steeeam"]https://steeeam.vercel.app/api/<steam_username_or_id>[/img][/url]
+[url=https://steeeam.vercel.app/STEAM_USERNAME_OR_ID64][img alt="Generate by Steeeam"]https://steeeam.vercel.app/api/STEAM_USERNAME_OR_ID64[/img][/url]
 ```
 
 # Customize your Steeeam card
