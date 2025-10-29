@@ -28,7 +28,7 @@ export default function UserDetails({ userSummary }: { userSummary: UserSummary 
             </Link>
 
             <div
-              className='flex justify-center items-center w-4 h-4 border border-white hover:border-white/80 hover:text-white/80 duration-150 rounded-sm cursor-pointer'
+              className='flex justify-center items-center w-4 h-4 border border-white hover:border-white/90 hover:text-white/90 duration-150 rounded-sm cursor-pointer'
               onClick={onOpen}
             >
               <p className='text-[10px] font-medium'>id</p>

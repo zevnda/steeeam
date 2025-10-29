@@ -85,7 +85,7 @@ async function getGameData(id: string, countryCode: string = 'us', currency: str
       includeUnvettedApps: true,
     })
   } catch (err) {
-    console.error('Error fetching user games. Likely private game details:', err)
+    console.error(`Error fetching user games for ${id}. Likely private game details:`, err)
     return {
       error: 'Games list is private',
       topFiveGames: [],

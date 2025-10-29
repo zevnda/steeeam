@@ -5,6 +5,7 @@ import type { UserSummary } from '@/types/user-summary'
 
 import { Button } from '@heroui/react'
 import { useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -56,14 +57,34 @@ export default function ProfileSummary({
       {error ? (
         <div className='flex justify-center w-full h-full mt-4'>
           <div className='relative flex justify-center items-center flex-col gap-8 w-full h-3/4 bg-base border border-light-border p-4 rounded-md'>
-            <p className='text-4xl font-bold text-center'>Uh-oh!</p>
-            <p className='text-center'>
-              This account has their games list set to private so we&apos;re unable to provide much information.
-            </p>
-            <Link
-              href={`https://steamcommunity.com/profiles/${userSummary.steamID64[0]}/edit/settings`}
-              target='_blank'
-            >
+            <p className='text-4xl font-bold text-center'>Oh no!</p>
+
+            <div className='flex flex-col justify-center items-center space-y-3'>
+              <p className='text-center text-sm'>
+                The owner of this account has their games list set to <strong>private</strong> so we&apos;re unable to
+                provide much information.
+              </p>
+
+              <p className='text-center text-sm'>
+                If this is your account, you can change your privacy settings to <strong>public</strong> in order to
+                view your profile data on Steeeam.
+              </p>
+
+              <p className='text-center text-sm'>
+                Click the &quot;<strong>Change Account Privacy</strong>&quot; button and following the instructions
+                below.
+              </p>
+            </div>
+
+            <Image
+              src='/steam-settings.gif'
+              alt='Steam game privacy settings illustration'
+              width={600}
+              height={600}
+              className='rounded-md border border-light-border hover:border-hover-border duration-150'
+            />
+
+            <Link href={`https://steamcommunity.com/my/edit/settings`} target='_blank'>
               <Button className='bg-pop text-black font-medium rounded-md'>Change Account Privacy</Button>
             </Link>
           </div>

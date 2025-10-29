@@ -22,7 +22,7 @@ async function fetchUserSummary(id: string, currency?: string) {
     }
     return { userSummary: null, error: data.error || 'Unknown error occurred.' }
   } catch (err) {
-    console.error('Error fetching user summary:', err)
+    console.error(`Error fetching user summary for ${id}:`, err)
     return { userSummary: null, error: 'Failed to fetch user info.' }
   }
 }
@@ -44,7 +44,7 @@ async function fetchUserGameData(
     }
     return { userGameData: null, error: data.error || 'Unknown error occurred.' }
   } catch (err) {
-    console.error('Error fetching user game data:', err)
+    console.error(`Error fetching user game data for ${steamID64}:`, err)
     return { userGameData: null, error: 'Failed to fetch user info.' }
   }
 }

@@ -50,7 +50,7 @@ export default function ShareableImage({ id }: { id: string }) {
               width={705}
               height={385}
               alt='Steeeam Card'
-              className='rounded-md border border-light-border w-full'
+              className='rounded-md border border-light-border w-full hover:border-hover-border duration-150'
             />
           </Link>
         </div>

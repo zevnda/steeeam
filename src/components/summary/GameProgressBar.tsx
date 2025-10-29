@@ -40,7 +40,11 @@ export default function GameProgressBar({ id, userGameData }: GameProgressBarPro
         }}
       />
 
-      <Link href={`https://steamcommunity.com/profiles/${id}/games?tab=all`} target='_blank'>
+      <Link
+        href={`https://steamcommunity.com/profiles/${id}/games?tab=all`}
+        target='_blank'
+        className='hover:text-white duration-150'
+      >
         <p className='text-sm mt-1'>View Games List</p>
       </Link>
     </div>
