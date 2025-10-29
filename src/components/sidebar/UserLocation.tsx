@@ -8,16 +8,18 @@ import { BiSolidCake } from 'react-icons/bi'
 import { FaEye, FaMapMarkerAlt } from 'react-icons/fa'
 
 export default function UserLocation({ userSummary }: { userSummary: UserSummary }) {
+  console.log(userSummary.location)
+
   return (
     <div className='flex items-center flex-col w-full gap-2 mt-4 lg:items-start'>
       <Tooltip
         closeDelay={0}
         className='bg-tooltip'
-        content={userSummary.location ? userSummary.location : 'Unknown location'}
+        content={userSummary.location[0] === '' ? 'Unknown' : userSummary.location[0]}
       >
         <div className='flex items-center max-w-[300px] text-sm text-neutral-500 gap-2 lg:max-w-[200px]'>
           <FaMapMarkerAlt fontSize={16} className='min-w-4' />
-          <p className='text-white truncate'>{userSummary.location ? userSummary.location : 'Unknown location'}</p>
+          <p className='text-white truncate'>{userSummary.location[0] === '' ? 'Unknown' : userSummary.location[0]}</p>
         </div>
       </Tooltip>
 

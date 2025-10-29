@@ -144,7 +144,7 @@ async function createFullCanvas(
   ctx.drawImage(locIcon, 20, 220)
   ctx.fillStyle = `#${text_color}`
   ctx.font = '12px Geist'
-  let location = userData.location && userData.location.length > 0 ? userData.location[0] : 'Unknown'
+  let location = userData.location && userData.location[0] === '' ? 'Unknown' : userData.location[0]
   if (location.length > 22) location = location.slice(0, 22) + '...'
   ctx.fillText(location, 43, 232)
 
