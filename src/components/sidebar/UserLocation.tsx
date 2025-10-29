@@ -8,8 +8,6 @@ import { BiSolidCake } from 'react-icons/bi'
 import { FaEye, FaMapMarkerAlt } from 'react-icons/fa'
 
 export default function UserLocation({ userSummary }: { userSummary: UserSummary }) {
-  console.log(userSummary.location)
-
   return (
     <div className='flex items-center flex-col w-full gap-2 mt-4 lg:items-start'>
       <Tooltip
