@@ -11,7 +11,7 @@ import UserLocation from '@/components/sidebar/UserLocation'
 
 export default function Sidebar({ userSummary }: { userSummary: UserSummary }) {
   return (
-    <div className='flex flex-col gap-4 w-full pb-10 lg:h-[calc(100vh-45px)] lg:border-r border-light-border pr-4 items-center z-50 lg:absolute lg:item-start lg:max-w-60 lg:w-fit'>
+    <div className='flex flex-col gap-4 w-full pb-10 lg:h-[calc(100vh-45px)] lg:border-r border-light-border lg:pr-4 items-center z-50 lg:absolute lg:item-start lg:max-w-60 lg:w-fit'>
       <Navigation />
       <Avatar userSummary={userSummary} />
       <UserDetails userSummary={userSummary} />

@@ -51,7 +51,7 @@ export interface UserSummary {
   accountid: string
   steamID2: string
   steamID3: string
-  friends: Friend[]
+  friends: Friend[] | string
   groups: string[]
   bans: {
     communityBanned: boolean

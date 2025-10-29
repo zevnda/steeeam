@@ -75,7 +75,6 @@ async function fetchUserGameData(
       cache: 'no-store',
     })
     const data = await res.json()
-    console.log(data.userGameData.topFiveGames)
     if (data.success) {
       return { userGameData: data.userGameData, error: '' }
     }

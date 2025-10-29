@@ -11,7 +11,7 @@ export default function UserBans({ userSummary }: { userSummary: UserSummary }) 
     <>
       <Divider className='hidden bg-light-border m-4 lg:block' />
 
-      <div className='flex justify-center lg:block'>
+      <div className='flex justify-center lg:block w-full mt-5 lg:mt-0'>
         <div className='grid grid-cols-2 grid-rows-6 gap-y-2 text-sm'>
           <div className='flex items-center max-w-[100px]'>
             <p className='truncate'>VAC Status</p>

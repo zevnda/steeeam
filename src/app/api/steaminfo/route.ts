@@ -1,7 +1,7 @@
 import { resolveVanityUrl, sidToShortURL } from '@/utils/utils'
 import { NextResponse } from 'next/server'
 import { createClient } from 'redis'
-import SteamAPI from 'steamapi'
+import SteamAPI, { UserFriend } from 'steamapi'
 import SteamID from 'steamid'
 import * as sidr from 'steamid-resolver'
 
@@ -63,29 +63,29 @@ async function getUserSummary(id: string) {
   const steamID2 = sid.getSteam2RenderedID(true)
   const steamID3 = sid.getSteam3RenderedID()
 
-  let friends = null,
-    groups = null,
+  let friends: UserFriend[] | null = null,
+    groups: string[] | null = null,
     bans = null
 
   try {
     friends = await sapi.getUserFriends(id)
   } catch (err) {
     const msg = getErrorMessage(err)
-    if (msg === 'Unauthorized' || msg === 'Forbidden') friends = 'private'
+    if (msg === 'Unauthorized' || msg === 'Forbidden') friends = []
     else throw err
   }
   try {
     groups = await sapi.getUserGroups(id)
   } catch (err) {
     const msg = getErrorMessage(err)
-    if (msg === 'Unauthorized' || msg === 'Forbidden') groups = 'private'
+    if (msg === 'Unauthorized' || msg === 'Forbidden') groups = []
     else throw err
   }
   try {
     bans = await sapi.getUserBans(id)
   } catch (err) {
     const msg = getErrorMessage(err)
-    if (msg === 'Unauthorized' || msg === 'Forbidden') bans = 'private'
+    if (msg === 'Unauthorized' || msg === 'Forbidden') bans = []
     else throw err
   }
 
