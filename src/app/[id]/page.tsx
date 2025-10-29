@@ -2,11 +2,43 @@ import type { UserGameData } from '@/types/user-game-data'
 import type { UserSummary } from '@/types/user-summary'
 
 import { Suspense } from 'react'
+import { Metadata } from 'next'
 
 import Footer from '@/components/Footer'
 import Loader from '@/components/Loader'
 import Sidebar from '@/components/sidebar/Sidebar'
 import ProfileSummary from '@/components/summary/ProfileSummary'
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<void | Metadata> {
+  const { id } = await params
+  const data = await fetchUserSummary(id)
+  if (data.userSummary) {
+    return {
+      title: `${data.userSummary.steamID[0] || id} - Steeeam Profile`,
+      description: `View the Steam profile of ${data.userSummary.steamID[0] || id} on Steeeam, a modern web app that allows you to visualize and share your Steam profile with customizable cards.`,
+      openGraph: {
+        url: `https://steeeam.vercel.app/${id}`,
+        title: `${data.userSummary.steamID[0] || id} - Steeeam Profile`,
+        description: `View the Steam profile of ${data.userSummary.steamID[0] || id} on Steeeam, a modern web app that allows you to visualize and share your Steam profile with customizable cards.`,
+        siteName: 'Steeeam',
+        images: [
+          {
+            url: `https://steeeam.vercel.app/api/${id}`,
+            width: 1200,
+            height: 630,
+            alt: `Steeeam Profile Card for ${data.userSummary.steamID[0] || id}`,
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `${data.userSummary.steamID[0] || id} - Steeeam Profile`,
+        description: `View the Steam profile of ${data.userSummary.steamID[0] || id} on Steeeam, a modern web app that allows you to visualize and share your Steam profile with customizable cards.`,
+        images: [`https://steeeam.vercel.app/api/${id}`],
+      },
+    }
+  }
+}
 
 async function fetchUserSummary(id: string, currency?: string) {
   try {
