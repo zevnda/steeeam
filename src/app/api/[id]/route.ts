@@ -2,18 +2,13 @@ import path from 'path'
 import type { UserGameData } from '@/types/user-game-data'
 import type { UserSummary } from '@/types/user-summary'
 
+import { getRelativeTimeImprecise, pricePerHour } from '@/utils/utils'
 import { createCanvas, GlobalFonts, loadImage, SKRSContext2D } from '@napi-rs/canvas'
-import { Redis } from '@upstash/redis'
 import moment from 'moment'
 import { NextResponse } from 'next/server'
 
-import { getRelativeTimeImprecise, pricePerHour } from '@/utils/utils'
-
-const redis = new Redis({
-  url: process.env.KV_REST_API_URL!,
-  token: process.env.KV_REST_API_TOKEN!,
-})
-const CACHE_TTL = 24 * 60 * 60 // 24 hours
+const imageCache = new Map<string, { buffer: Buffer; timestamp: number }>()
+const CACHE_TTL = 24 * 60 * 60 * 1000 // 24 hours
 
 // Pre-load fonts once
 let fontsLoaded = false
@@ -335,7 +330,7 @@ async function createFullCanvas(
     ctx.fillText('Private Games List', 390, 200)
   }
 
-  // Avatar
+  // Avatar with caching
   async function drawCenteredRoundedImage() {
     try {
       const avatar = await loadImage(userData.avatar.large)
@@ -381,12 +376,11 @@ async function createFullCanvas(
 export async function GET(req: Request) {
   const url = new URL(req.url)
 
-  const cacheKey = `canvas:${url.pathname}:${url.searchParams.toString()}`
+  const cacheKey = url.pathname + url.search
 
-  const cached = await redis.get(cacheKey)
-  if (cached) {
-    const buffer = Buffer.from(cached as string, 'base64')
-    return new NextResponse(new Uint8Array(buffer), {
+  const cached = imageCache.get(cacheKey)
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return new NextResponse(new Uint8Array(cached.buffer), {
       status: 200,
       headers: {
         'Content-Type': 'image/png',
@@ -442,7 +436,7 @@ export async function GET(req: Request) {
 
   const uint8Array = new Uint8Array(buffer)
 
-  await redis.set(cacheKey, Buffer.from(buffer).toString('base64'), { ex: CACHE_TTL })
+  imageCache.set(cacheKey, { buffer, timestamp: Date.now() })
 
   return new NextResponse(uint8Array, {
     status: 200,
