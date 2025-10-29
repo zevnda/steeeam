@@ -51,7 +51,7 @@ export default function TopFiveGames({ id, userGameData }: TopFiveGamesProps) {
               <div className='flex gap-2'>
                 <Skeleton isLoaded={item.game.capsuleFilename !== ''}>
                   <Image
-                    className='rounded-l-md min-h-[110px] min-w-[131px] max-w-[131px] object-cover md:min-w-[231px] md:max-w-[231px]'
+                    className='rounded-l-md min-h-[120px] min-w-[131px] max-w-[131px] object-cover md:min-w-[231px] md:max-w-[231px]'
                     src={`https://cdn.cloudflare.steamstatic.com/steam/apps/${item.game.id}/header.jpg`}
                     width={231}
                     height={87}

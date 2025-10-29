@@ -1,11 +1,9 @@
 import type { UserGameData } from '@/types/user-game-data'
 
-import moment from 'moment'
+import { minutesToHoursCompact, recentMinutesToHoursCompact } from '@/utils/utils'
 import { FaMoneyBillWave } from 'react-icons/fa'
 import { IoGameController } from 'react-icons/io5'
 import { MdAvTimer } from 'react-icons/md'
-
-import { minutesToHoursCompact } from '@/utils/utils'
 
 interface GameDetailsProps {
   userGameData: UserGameData | null
@@ -21,19 +19,13 @@ export default function GameDetails({ userGameData, gameName, minutes, recentMin
     <div className='flex flex-col justify-between text-white w-full overflow-hidden py-1'>
       <p className='font-bold truncate'>{gameName}</p>
 
-      <div className='hidden gap-4 py-1 flex-wrap mt-5 md:mt-0 md:gap-10 md:flex'>
+      <div className='hidden gap-8 py-1 flex-wrap mt-5 md:mt-0 md:gap-10 md:flex'>
         <div className='flex flex-col text-sm'>
           <div className='flex items-center gap-1'>
             <MdAvTimer className='text-yellow-400' fontSize={20} />
-            <p className='text-md font-medium uppercase text-dull'>Total Platime</p>
+            <p className='text-md font-medium uppercase text-dull'>Total Playtime</p>
           </div>
-          {parseInt(minutesToHoursCompact(minutes)) > 1 ? (
-            <p className='text-alt'>{minutesToHoursCompact(minutes)} hours</p>
-          ) : parseInt(minutesToHoursCompact(minutes)) === 0 ? (
-            <p className='text-alt'>Never played</p>
-          ) : (
-            <p className='text-alt'>{minutesToHoursCompact(minutes)} hour</p>
-          )}
+          <p className='text-alt'>{minutesToHoursCompact(minutes)}</p>
         </div>
 
         <div className='flex flex-col text-sm'>
@@ -41,11 +33,7 @@ export default function GameDetails({ userGameData, gameName, minutes, recentMin
             <IoGameController className='text-blue-400' fontSize={20} />
             <p className='text-md font-medium uppercase text-dull'>Recent Playtime</p>
           </div>
-          {recentMinutes && recentMinutes > 0 ? (
-            <p className='text-alt'>{moment.unix(recentMinutes).format('MMM D, YYYY')}</p>
-          ) : (
-            <p className='text-alt'>-</p>
-          )}
+          <p className='text-alt'>{recentMinutesToHoursCompact(recentMinutes)}</p>
         </div>
 
         <div className='flex flex-col text-sm'>
@@ -61,22 +49,18 @@ export default function GameDetails({ userGameData, gameName, minutes, recentMin
         </div>
       </div>
 
-      <div className='grid grid-cols-1 w-full mt-2 py-1 flex-wrap sm:gap-4 sm:grid-cols-3 md:hidden'>
-        <div className='flex items-center justify-start gap-1 text-sm'>
+      <div className='grid grid-cols-1 w-full mt-2 py-1 flex-wrap gap-1 sm:gap-4 sm:grid-cols-3 md:hidden'>
+        <div className='flex items-center justify-start gap-2 text-sm'>
           <MdAvTimer className='text-yellow-400' fontSize={20} />
-          <p className='truncate'>{minutesToHoursCompact(minutes)} hours</p>
+          <p className='truncate text-alt'>{minutesToHoursCompact(minutes)}</p>
         </div>
 
-        <div className='flex items-center justify-start gap-1 text-sm'>
+        <div className='flex items-center justify-start gap-2 text-sm'>
           <IoGameController className='text-blue-400' fontSize={20} />
-          {recentMinutes && recentMinutes > 0 ? (
-            <p className='truncate text-alt'>{moment.unix(recentMinutes).format('MMM D, YYYY')}</p>
-          ) : (
-            <p className='text-alt'>-</p>
-          )}
+          <p className='truncate text-alt'>{recentMinutesToHoursCompact(recentMinutes)}</p>
         </div>
 
-        <div className='flex items-center justify-start grow gap-1 text-sm'>
+        <div className='flex items-center justify-start grow gap-2 text-sm'>
           <FaMoneyBillWave className='text-green-400' fontSize={20} />
           {gameDetail && gameDetail.priceOverview ? (
             <p className='truncate text-alt'>{gameDetail.priceOverview.final_formatted}</p>

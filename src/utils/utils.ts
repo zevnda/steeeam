@@ -51,23 +51,52 @@ export function pricePerHour(totalCost: string, totalPlaytime: string, currency?
   return formattedPrice
 }
 
-export function minutesToHoursCompact(number: number): string {
-  const durationInMinutes = number
-  const duration = moment.duration(durationInMinutes, 'minutes')
-  const hours = Math.floor(duration.asHours())
-  return hours.toLocaleString()
+export function minutesToHoursCompact(minutes: number): string {
+  if (minutes < 1) return 'Never played'
+  if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'}`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) {
+    const formatted = new Intl.NumberFormat('en-US').format(hours)
+    return `${formatted} ${hours === 1 ? 'hour' : 'hours'}`
+  }
+  const days = Math.floor(hours / 24)
+  const formattedDays = new Intl.NumberFormat('en-US').format(days)
+  const formattedHours = new Intl.NumberFormat('en-US').format(hours)
+  return `${formattedDays} ${days === 1 ? 'day' : 'days'} (${formattedHours} hours)`
+}
+
+export function recentMinutesToHoursCompact(minutes: number | undefined): string {
+  if (!minutes || minutes < 1) return '0 minutes'
+  if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'}`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) {
+    const formatted = new Intl.NumberFormat('en-US').format(hours)
+    return `${formatted} ${hours === 1 ? 'hour' : 'hours'}`
+  }
+  const days = Math.floor(hours / 24)
+  const formattedDays = new Intl.NumberFormat('en-US').format(days)
+  const formattedHours = new Intl.NumberFormat('en-US').format(hours)
+  return `${formattedDays} ${days === 1 ? 'day' : 'days'} (${formattedHours} hours)`
 }
 
 export function getRelativeTimeImprecise(timestamp: number): string {
   const now = moment()
   const then = moment.unix(timestamp)
   const deltaYears = now.diff(then, 'years', true)
+  const deltaMonths = now.diff(then, 'months', true)
+  const deltaDays = now.diff(then, 'days', true)
+  const deltaHours = now.diff(then, 'hours', true)
+  const deltaMinutes = now.diff(then, 'minutes', true)
 
-  if (deltaYears > 1) {
-    return `${deltaYears.toFixed(0)} years`
-  } else if (deltaYears > 0) {
-    return `${deltaYears.toFixed(0)} year`
+  if (deltaYears >= 1) {
+    return `${Math.floor(deltaYears)} year${Math.floor(deltaYears) === 1 ? '' : 's'}`
+  } else if (deltaMonths >= 1) {
+    return `${Math.floor(deltaMonths)} month${Math.floor(deltaMonths) === 1 ? '' : 's'}`
+  } else if (deltaDays >= 1) {
+    return `${Math.floor(deltaDays)} day${Math.floor(deltaDays) === 1 ? '' : 's'}`
+  } else if (deltaHours >= 1) {
+    return `${Math.floor(deltaHours)} hour${Math.floor(deltaHours) === 1 ? '' : 's'}`
   } else {
-    return moment(then).fromNow()
+    return `${Math.floor(deltaMinutes)} minute${Math.floor(deltaMinutes) === 1 ? '' : 's'}`
   }
 }

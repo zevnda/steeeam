@@ -60,23 +60,28 @@ async function fetchUserSummary(id: string, currency?: string) {
 }
 
 async function fetchUserGameData(
-  steamID64: string,
+  userSummary: UserSummary,
   currency?: string,
 ): Promise<{ userGameData: UserGameData | null; error: string }> {
   try {
+    if (userSummary.privacyState[0] === 'private' || userSummary.privacyState[0] === 'friendsonly') {
+      return { userGameData: null, error: 'User profile is private.' }
+    }
+
     const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/gamedata`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: steamID64, currency }),
+      body: JSON.stringify({ id: userSummary.steamID64[0], currency }),
       cache: 'no-store',
     })
     const data = await res.json()
+    console.log(data.userGameData.topFiveGames)
     if (data.success) {
       return { userGameData: data.userGameData, error: '' }
     }
     return { userGameData: null, error: data.error || 'Unknown error occurred.' }
   } catch (err) {
-    console.error(`Error fetching user game data for ${steamID64}:`, err)
+    console.error(`Error fetching user game data for ${userSummary.steamID64[0]}:`, err)
     return { userGameData: null, error: 'Failed to fetch user info.' }
   }
 }
@@ -93,7 +98,7 @@ async function UserSummary({ id, currency }: { id: string; currency?: string }) 
     )
   }
 
-  const gameDataPromise = fetchUserGameData(userSummary.steamID64[0], currency)
+  const gameDataPromise = fetchUserGameData(userSummary, currency)
 
   return (
     <>

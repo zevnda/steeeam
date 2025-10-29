@@ -244,7 +244,7 @@ async function createFullCanvas(
     ctx.fillText('Total Playtime', 370, 240)
     ctx.fillStyle = `#${text_color}`
     ctx.font = '600 26px Geist'
-    ctx.fillText(`${gameData.totals?.totalPlaytimeHours || '0'}h`, 370, 270)
+    ctx.fillText(`${gameData.totals?.totalPlaytimeHours.toLocaleString() || '0'}h`, 370, 270)
 
     // Game progress bar
     const playedCount = gameData.playCount?.playedCount.toString() || '0'

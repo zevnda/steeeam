@@ -19,11 +19,11 @@ const CodeWithSelection = ({ label, code }: { label: string; code: string }) => 
       <div className='flex flex-col group'>
         <p className='font-semibold mb-1'>{label}</p>
         <div
-          className='flex justify-between items-center gap-4 bg-[#1c1c1c] hover:bg-[#1f1f1f] p-1.5 rounded w-full lg:w-[70%] cursor-pointer duration-150'
+          className='flex justify-between items-center gap-4 bg-[#1c1c1c] hover:bg-[#1f1f1f] p-3 rounded w-full lg:w-[70%] cursor-pointer duration-150 min-w-0'
           onClick={() => copyToClipboard(code)}
         >
-          <p className='text-xs font-mono w-[95%]'>{code}</p>
-          <FaRegCopy className='text-md group-hover:opacity-70 duration-150' />
+          <p className='text-xs font-mono w-[95%] overflow-hidden'>{code}</p>
+          <FaRegCopy className='text-lg shrink-0 w-6 group-hover:opacity-70 duration-150' />
         </div>
       </div>
     </>
@@ -53,24 +53,24 @@ export default function ShareableImage({ id }: { id: string }) {
               className='rounded-md border border-light-border w-full hover:border-hover-border duration-150'
             />
           </Link>
+
+          <p className='text-xs md:text-sm'>
+            This image can be fully customized to your liking.{' '}
+            <Link
+              href={'https://github.com/zevnda/steeeam?tab=readme-ov-file#customize-your-steeeam-card'}
+              target='_blank'
+            >
+              Learn more.
+            </Link>
+          </p>
         </div>
 
-        <p className='text-sm'>
-          This image can be fully customized to your liking.{' '}
-          <Link
-            href={'https://github.com/zevnda/steeeam?tab=readme-ov-file#customize-your-steeeam-card'}
-            target='_blank'
-          >
-            Learn more here.
-          </Link>
-        </p>
-
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col space-y-4'>
           <CodeWithSelection label='Discord' code={`https://steeeam.vercel.app/api/${id}`} />
           <CodeWithSelection label='Twitter, Facebook, WhatsApp, etc..' code={`https://steeeam.vercel.app/${id}`} />
           <CodeWithSelection
             label='HTML'
-            code={`<a href="https://steeeam.vercel.app/${id}"><img src="https://steeeam.vercel.app/api/${id}" alt="Generate by Steeeam"/></a>`}
+            code={`<a href="https://steeeam.vercel.app/${id}"> <img src="https://steeeam.vercel.app/api/${id}" alt="Generate by Steeeam"/></a>`}
           />
           <CodeWithSelection
             label='Markdown'
