@@ -6,7 +6,9 @@ import { Metadata } from 'next'
 
 import Footer from '@/components/Footer'
 import Loader from '@/components/Loader'
+import Navbar from '@/components/Navbar'
 import Sidebar from '@/components/sidebar/Sidebar'
+import Error from '@/components/summary/Error'
 import ProfileSummary from '@/components/summary/ProfileSummary'
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<void | Metadata> {
@@ -90,10 +92,10 @@ async function UserSummary({ id, currency }: { id: string; currency?: string }) 
 
   if (summaryError || !userSummary) {
     return (
-      <div className='flex flex-col items-center justify-center min-h-screen bg-black text-white'>
-        <h1 className='text-3xl font-bold mb-4'>Steam User</h1>
-        <div className='text-red-500 text-lg mt-4'>{summaryError}</div>
-      </div>
+      <>
+        <Navbar />
+        <Error error={summaryError} />
+      </>
     )
   }
 

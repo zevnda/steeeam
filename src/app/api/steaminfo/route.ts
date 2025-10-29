@@ -45,11 +45,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, userSummary: userSummary }, { status: 200 })
   } catch (err) {
     console.error(err)
-    return NextResponse.json({ success: false, error: 'Failed to fetch user data' }, { status: 400 })
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          'An error occurred while fetching the user summary.\n This may be due to an invalid Steam Username/ID or a problem with the Steam API.\n\n If you believe this is a mistake, please report the issue on GitHub.',
+      },
+      { status: 400 },
+    )
   }
 }
 
 async function getUserSummary(id: string) {
+  if (typeof id !== 'string' || !/^\d{17}$/.test(id)) {
+    throw new Error('Invalid Steam ID format')
+  }
+
   const sid = new SteamID(id)
 
   if (!sid.isValid()) {
