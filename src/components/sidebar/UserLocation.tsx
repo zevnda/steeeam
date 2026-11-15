@@ -37,7 +37,7 @@ export default function UserLocation({ userSummary }: { userSummary: UserSummary
         <BiSolidCake fontSize={16} />
         <p className='text-white truncate'>
           {userSummary.createdTimestamp
-            ? `Joined ${moment.unix(userSummary.createdTimestamp).fromNow()} ago`
+            ? `Joined ${moment.unix(userSummary.createdTimestamp).fromNow()}`
             : 'Unknown'}
         </p>
       </div>
