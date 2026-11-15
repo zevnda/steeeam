@@ -3,20 +3,37 @@ import SteamID from 'steamid'
 
 const STEAM_API = 'https://api.steampowered.com'
 
-export async function resolveVanityUrl(id: string): Promise<string> {
-  try {
-    const res = await fetch(
-      `${STEAM_API}/ISteamUser/ResolveVanityURL/v1/?key=${process.env.STEAM_API_KEY}&vanityurl=${id}`,
+export class SteamApiKeyError extends Error {
+  constructor() {
+    super(
+      'The Steam Web API rejected the configured STEAM_API_KEY (403). Generate a new key at https://steamcommunity.com/dev/apikey',
     )
-    const data = await res.json()
-    if (data?.response?.steamid) {
-      return data.response.steamid
-    }
-    return id
-  } catch (err) {
-    console.error('Error resolving vanity URL:', err)
-    return id
+    this.name = 'SteamApiKeyError'
   }
+}
+
+export function isSteamApiKeyError(err: unknown): boolean {
+  if (err instanceof SteamApiKeyError) return true
+  const msg = typeof err === 'object' && err !== null && 'message' in err ? String((err as Error).message) : ''
+  return msg === 'Forbidden' || msg === 'Unauthorized'
+}
+
+/**
+ * Resolve a Steam vanity name (or a raw SteamID64) to a SteamID64.
+ * Returns null if no matching user exists. Throws SteamApiKeyError if the API key is rejected.
+ */
+export async function resolveVanityUrl(id: string): Promise<string | null> {
+  const input = id.trim()
+  if (/^\d{17}$/.test(input)) return input
+
+  const res = await fetch(
+    `${STEAM_API}/ISteamUser/ResolveVanityURL/v1/?key=${process.env.STEAM_API_KEY}&vanityurl=${encodeURIComponent(input)}`,
+  )
+  if (res.status === 401 || res.status === 403) throw new SteamApiKeyError()
+  if (!res.ok) throw new Error(`ResolveVanityURL failed with status ${res.status}`)
+
+  const data = await res.json()
+  return data?.response?.success === 1 && data.response.steamid ? data.response.steamid : null
 }
 
 export function sidToShortURL(id: string): string {

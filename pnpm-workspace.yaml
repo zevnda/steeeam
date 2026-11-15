@@ -1,0 +1,15 @@
+nodeLinker: hoisted
+shamefullyHoist: true
+publicHoistPattern:
+  - '*@heroui/*'
+  - '@napi-rs/*'
+
+allowBuilds:
+  '@heroui/shared-utils': true
+  sharp: true
+  unrs-resolver: true
+
+overrides:
+  '@babel/core': '>=7.29.1'
+  browserslist: '>=4.28.7'
+  source-map-js: '>=1.2.2'

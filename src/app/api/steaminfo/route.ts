@@ -1,15 +1,9 @@
-import { resolveVanityUrl, sidToShortURL } from '@/utils/utils'
+import { cacheGet, cacheSet } from '@/utils/cache'
+import { isSteamApiKeyError, resolveVanityUrl, sidToShortURL } from '@/utils/utils'
 import { NextResponse } from 'next/server'
-import { createClient } from 'redis'
 import SteamAPI, { UserFriend } from 'steamapi'
 import SteamID from 'steamid'
 import * as sidr from 'steamid-resolver'
-
-const redis = createClient({
-  url: process.env.REDIS_URL!,
-})
-await redis.connect()
-const CACHE_TTL = 24 * 60 * 60 // 24 hours
 
 const apiKey = process.env.STEAM_API_KEY ?? ''
 if (!apiKey) {
@@ -27,7 +21,7 @@ export async function POST(req: Request) {
     }
 
     const cacheKey = `steaminfo:${id}`
-    const cached = await redis.get(cacheKey)
+    const cached = await cacheGet(cacheKey)
     if (cached) {
       return NextResponse.json({ success: true, userSummary: JSON.parse(cached) }, { status: 200 })
     }
@@ -35,16 +29,35 @@ export async function POST(req: Request) {
     const steamId = await resolveVanityUrl(id)
 
     if (!steamId) {
-      return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 })
+      return NextResponse.json(
+        {
+          success: false,
+          error: `No Steam user found for "${id}".\nCheck the Steam username, custom URL or SteamID64 and try again.`,
+        },
+        { status: 404 },
+      )
     }
 
     const userSummary = await getUserSummary(steamId)
 
-    await redis.set(cacheKey, JSON.stringify(userSummary), { EX: CACHE_TTL })
+    await cacheSet(cacheKey, JSON.stringify(userSummary))
 
     return NextResponse.json({ success: true, userSummary: userSummary }, { status: 200 })
   } catch (err) {
     console.error(err)
+    if (isSteamApiKeyError(err)) {
+      console.error(
+        'Steam Web API rejected STEAM_API_KEY. Generate a new key at https://steamcommunity.com/dev/apikey and update the environment variable.',
+      )
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            'Steeeam is currently unable to connect to the Steam Web API.\nThis is a problem on our end, not with your profile. Please try again later.',
+        },
+        { status: 503 },
+      )
+    }
     return NextResponse.json(
       {
         success: false,

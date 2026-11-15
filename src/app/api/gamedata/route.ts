@@ -1,14 +1,8 @@
+import { cacheGet, cacheSet } from '@/utils/cache'
 import { resolveVanityUrl } from '@/utils/utils'
 import { NextResponse } from 'next/server'
-import { createClient } from 'redis'
 import SteamLevel from 'steam-level'
 import SteamAPI, { Game, GameDetails, GameInfo, GameInfoExtended, UserPlaytime } from 'steamapi'
-
-const redis = createClient({
-  url: process.env.REDIS_URL!,
-})
-await redis.connect()
-const CACHE_TTL = 24 * 60 * 60 // 24 hours
 
 interface UserGame {
   game: {
@@ -36,7 +30,7 @@ export async function POST(req: Request) {
     const { id, currency = 'us' } = await req.json()
 
     const cacheKey = `gamedata:${id}:${currency}`
-    const cached = await redis.get(cacheKey)
+    const cached = await cacheGet(cacheKey)
     if (cached) {
       return NextResponse.json({ success: true, userGameData: JSON.parse(cached) }, { status: 200 })
     }
@@ -65,7 +59,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: userGameData.error }, { status: 403 })
     }
 
-    await redis.set(cacheKey, JSON.stringify(userGameData), { EX: CACHE_TTL })
+    await cacheSet(cacheKey, JSON.stringify(userGameData))
 
     return NextResponse.json({ success: true, userGameData: userGameData }, { status: 200 })
   } catch (err) {

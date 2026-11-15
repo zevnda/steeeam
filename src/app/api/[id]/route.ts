@@ -2,17 +2,11 @@ import path from 'path'
 import type { UserGameData } from '@/types/user-game-data'
 import type { UserSummary } from '@/types/user-summary'
 
+import { cacheGet, cacheSet } from '@/utils/cache'
 import { getRelativeTimeImprecise, pricePerHour } from '@/utils/utils'
 import { createCanvas, GlobalFonts, loadImage, SKRSContext2D } from '@napi-rs/canvas'
 import moment from 'moment'
 import { NextResponse } from 'next/server'
-import { createClient } from 'redis'
-
-const redis = createClient({
-  url: process.env.REDIS_URL!,
-})
-await redis.connect()
-const CACHE_TTL = 24 * 60 * 60 // 24 hours
 
 // Pre-load fonts once
 let fontsLoaded = false
@@ -381,7 +375,7 @@ export async function GET(req: Request) {
   const url = new URL(req.url)
 
   const cacheKey = `canvas:${url.pathname}:${url.searchParams.toString()}`
-  const cached = await redis.get(cacheKey)
+  const cached = await cacheGet(cacheKey)
 
   if (cached) {
     const buffer = Buffer.from(cached as string, 'base64')
@@ -441,7 +435,7 @@ export async function GET(req: Request) {
 
   const uint8Array = new Uint8Array(buffer)
 
-  await redis.set(cacheKey, Buffer.from(buffer).toString('base64'), { EX: CACHE_TTL })
+  await cacheSet(cacheKey, Buffer.from(buffer).toString('base64'))
 
   return new NextResponse(uint8Array, {
     status: 200,
